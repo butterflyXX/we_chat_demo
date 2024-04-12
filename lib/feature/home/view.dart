@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_demo/common/color.dart';
 import 'package:we_chat_demo/common/widget/app_bar.dart';
@@ -15,9 +18,10 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Provider(
         create: (context) => HomeState(context),
         builder: (context, child) {
@@ -68,7 +72,19 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                final Directory tempDir = await getLibraryDirectory();
+                for(final file in tempDir.listSync()) {
+                  print(file);
+                }
+              },
+            ),
           );
         });
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

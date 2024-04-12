@@ -22,6 +22,7 @@ class HomeTab extends StatelessWidget with Routable {
             itemBuilder: (context, index) {
               return state.tabBars[index].builder();
             },
+            physics: const NeverScrollableScrollPhysics(),
           ),
           bottomNavigationBar: ValueListenableBuilder(
             valueListenable: state.currentIndex,

@@ -9,9 +9,10 @@ class Contact extends StatefulWidget {
   State<Contact> createState() => _ContactState();
 }
 
-class _ContactState extends State<Contact> {
+class _ContactState extends State<Contact> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: commonAppbar(context,title: Contact.title),
       body: Center(
@@ -19,4 +20,7 @@ class _ContactState extends State<Contact> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

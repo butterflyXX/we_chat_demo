@@ -9,9 +9,10 @@ class Find extends StatefulWidget {
   State<Find> createState() => _FindState();
 }
 
-class _FindState extends State<Find> {
+class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: commonAppbar(context,title: Find.title),
       body: Center(
@@ -19,4 +20,8 @@ class _FindState extends State<Find> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

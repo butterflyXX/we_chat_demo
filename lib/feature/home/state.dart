@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:we_chat_demo/common/navigator/navigator_manager.dart';
 import 'package:we_chat_demo/feature/chat_detail/view.dart';
 import 'package:we_chat_demo/model/home_item_model.dart';
+import 'package:we_chat_demo/route/route_name.dart';
 
 class HomeState {
   BuildContext _context;
   ValueNotifier<List<HomeItemModel>> dataList = ValueNotifier([]);
+
   HomeState(this._context) {
     loadData();
   }
@@ -20,7 +23,7 @@ class HomeState {
           title: "test-$index",
           subTitle: "test-$index description sdhjsjdh1",
           id: index,
-          time: current.millisecondsSinceEpoch - 1000*60*60*index,
+          time: current.millisecondsSinceEpoch - 1000 * 60 * 60 * index,
           name: "名字 - $index",
         );
       });
@@ -28,6 +31,11 @@ class HomeState {
   }
 
   gotoChatDetail(HomeItemModel model) {
-    Navigator.of(_context).push(MaterialPageRoute(builder: (_)=>ChatDetailPage(model: model)));
+    NavigatorManager.pushNamed(
+      RouteName.chatDetail,
+      arguments: {
+        "params": {"name": model.name},
+      },
+    );
   }
 }

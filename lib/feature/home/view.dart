@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_demo/common/color.dart';
 import 'package:we_chat_demo/common/widget/app_bar.dart';
 import 'package:we_chat_demo/common/widget/button/home_top_search_button.dart';
+import 'package:we_chat_demo/common/widget/button/icon_button.dart';
 import 'package:we_chat_demo/feature/home/state.dart';
 import 'package:we_chat_demo/feature/home/widget/home_item_widget.dart';
 
@@ -31,14 +33,14 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
               context,
               title: Home.title,
               actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.add_circle_outline),
+                CommonIconButton(
+                  onTap: () {},
+                  child: const Icon(Icons.add_circle_outline),
                 ),
               ],
-              leading: IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.more_horiz),
+              leading: CommonIconButton(
+                onTap: () {},
+                child: const Icon(Icons.more_horiz),
               ),
             ),
             backgroundColor: Colors.white,
@@ -66,7 +68,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
               child: Container(
                 height: 46,
                 color: commonAppBarBackColor,
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5),
                 child: HomeTopSearchButton(
                   onTap: () {},
                 ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:we_chat_demo/common/color.dart';
+import 'package:we_chat_demo/common/widget/button/icon_button.dart';
 
 AppBar commonAppbar(
   BuildContext context, {
@@ -45,15 +46,16 @@ AppBar commonAppbar(
 }
 
 Widget backWidgetAction({VoidCallback? backAction, Color? tintColor}) {
-  return IconButton(
-      icon: Container(
-        margin: EdgeInsets.only(left: 10.w),
-        child: Icon(
-          Icons.arrow_back_ios,
-          color: tintColor,
-        ),
+  return CommonIconButton(
+    onTap: backAction,
+    child: Container(
+      margin: EdgeInsets.only(left: 10.w),
+      child: Icon(
+        Icons.arrow_back_ios,
+        color: tintColor,
       ),
-      onPressed: backAction);
+    ),
+  );
 }
 
 Widget commonActionItem({required String title, VoidCallback? onTap}) {

@@ -14,6 +14,7 @@
 		716F4CBD2BC8D89300E6DD30 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 716F4CBC2BC8D89300E6DD30 /* LaunchScreen.storyboard */; };
 		716F4CC22BC8EBC600E6DD30 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 716F4CC02BC8EBC600E6DD30 /* AppDelegate.m */; };
 		716F4CC82BC8EC1600E6DD30 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 716F4CC72BC8EC1600E6DD30 /* main.m */; };
+		71857C0B2BCE7975006E9814 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71857C0A2BCE7975006E9814 /* ViewController.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		9F3F2085420BA32999628D4C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F65E2A7C0AE0040FB8FAC02 /* Pods_Runner.framework */; };
@@ -56,6 +57,8 @@
 		716F4CC02BC8EBC600E6DD30 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		716F4CC12BC8EBC600E6DD30 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		716F4CC72BC8EC1600E6DD30 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		71857C092BCE7975006E9814 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		71857C0A2BCE7975006E9814 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		88CF078E458F231E3C253480 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -151,6 +154,8 @@
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				716F4CC72BC8EC1600E6DD30 /* main.m */,
+				71857C092BCE7975006E9814 /* ViewController.h */,
+				71857C0A2BCE7975006E9814 /* ViewController.m */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				716F4CBC2BC8D89300E6DD30 /* LaunchScreen.storyboard */,
@@ -381,6 +386,7 @@
 			files = (
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				716F4CC82BC8EC1600E6DD30 /* main.m in Sources */,
+				71857C0B2BCE7975006E9814 /* ViewController.m in Sources */,
 				716F4CC22BC8EBC600E6DD30 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

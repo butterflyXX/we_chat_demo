@@ -85,4 +85,8 @@ class ChatDetailState {
     test.add(value);
     addTest();
   }
+
+  hasFocus() {
+
+  }
 }

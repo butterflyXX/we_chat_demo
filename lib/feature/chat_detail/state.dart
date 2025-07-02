@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:we_chat_demo/model/chat_item_model.dart';
+import 'package:chat_demo/model/chat_item_model.dart';
 
 typedef JumpCallBack<T> = void Function(bool animation, bool nextFrame);
 
@@ -71,10 +71,7 @@ class ChatDetailState {
     final item = test[dataList.value.length];
     final id = int.parse(item.substring(0, 1));
     final text = item.substring(1, item.length);
-    final model = ChatItemModel(
-      id: id,
-      text: text,
-    );
+    final model = ChatItemModel(id: id, text: text);
     dataList.value = List.from(dataList.value..add(model));
     jumpWithAnimation?.call(true, true);
   }

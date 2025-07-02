@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/navigator/navigator_manager.dart';
-import 'package:we_chat_demo/model/home_item_model.dart';
-import 'package:we_chat_demo/route/route_name.dart';
+import 'package:chat_demo/common/navigator/navigator_manager.dart';
+import 'package:chat_demo/model/home_item_model.dart';
+import 'package:chat_demo/route/route_name.dart';
 
 class HomeState {
   BuildContext context;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/common/widget/chat_bubble.dart';
-import 'package:we_chat_demo/model/chat_item_model.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/common/widget/chat_bubble.dart';
+import 'package:chat_demo/model/chat_item_model.dart';
 
 class ChatItemWidget extends StatelessWidget {
   final ChatItemModel model;
@@ -23,26 +23,12 @@ class ChatItemWidget extends StatelessWidget {
 
         final text = textWidget(textWidth);
 
-        final padding = SizedBox(
-          width: 10.w,
-        );
+        final padding = SizedBox(width: 10.w);
 
-        List<Widget> children = [
-          icon,
-          padding,
-          Expanded(
-            child: text,
-          ),
-        ];
+        List<Widget> children = [icon, padding, Expanded(child: text)];
 
         if (isMe()) {
-          children = [
-            Expanded(
-              child: text,
-            ),
-            padding,
-            icon,
-          ];
+          children = [Expanded(child: text), padding, icon];
         }
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,8 +51,9 @@ class ChatItemWidget extends StatelessWidget {
 
   Widget textWidget(double maxWidth) {
     return Row(
-      mainAxisAlignment:
-          isMe() ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isMe()
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),

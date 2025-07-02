@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/navigator/history_observer.dart';
+import 'package:chat_demo/common/navigator/history_observer.dart';
 
 class NavigatorManager {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -10,17 +10,17 @@ class NavigatorManager {
   }
 
   static Future<T?> pushNamed<T extends Object?>(
-      String routeName, {
-        Object? arguments,
-      }) {
-    return state.pushNamed(routeName,arguments: arguments);
+    String routeName, {
+    Object? arguments,
+  }) {
+    return state.pushNamed(routeName, arguments: arguments);
   }
 
   static void pop<T extends Object?>([T? result]) {
     return state.pop();
   }
 
-  static void popToRoute<T extends Object?>(String routeName,{T? result}) {
+  static void popToRoute<T extends Object?>(String routeName, {T? result}) {
     final history = HistoryObserver().history;
     var current = history.last;
     while (history.length >= 2) {

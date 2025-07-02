@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/widget/app_bar.dart';
+import 'package:chat_demo/common/widget/app_bar.dart';
 
 class Find extends StatefulWidget {
   static const String title = "发现";
@@ -15,9 +15,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return Scaffold(
       appBar: commonAppbar(context, title: Find.title),
-      body: const Center(
-        child: Text(Find.title),
-      ),
+      body: const Center(child: Text(Find.title)),
     );
   }
 

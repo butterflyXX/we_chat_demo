@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/model/home_item_model.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/model/home_item_model.dart';
 
 class HomeItemWidget extends StatelessWidget {
   final HomeItemModel model;
@@ -26,9 +26,7 @@ class HomeItemWidget extends StatelessWidget {
                 color: Colors.green,
               ),
             ),
-            SizedBox(
-              width: 12.w,
-            ),
+            SizedBox(width: 12.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,10 +35,7 @@ class HomeItemWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        model.title,
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
+                      Text(model.title, style: TextStyle(fontSize: 16.sp)),
                       Text(
                         DateFormat("yyyy-MM-dd HH:mm").format(dateTime),
                         style: TextStyle(
@@ -52,8 +47,10 @@ class HomeItemWidget extends StatelessWidget {
                   ),
                   Text(
                     model.subTitle,
-                    style:
-                        TextStyle(fontSize: 12.sp, color: homeSearchTintColor),
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: homeSearchTintColor,
+                    ),
                   ),
                 ],
               ),

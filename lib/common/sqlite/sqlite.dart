@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:we_chat_demo/common/common.dart';
+import 'package:chat_demo/common/common.dart';
 
 abstract class SqliteTableApi {
   late final Database db;
@@ -8,8 +8,11 @@ abstract class SqliteTableApi {
   String table;
   String createSq;
 
-  SqliteTableApi(
-      {required this.dbName, required this.table, required this.createSq});
+  SqliteTableApi({
+    required this.dbName,
+    required this.table,
+    required this.createSq,
+  });
 
   Future load() async {
     db = await SqliteUtil.open(dbName);
@@ -28,7 +31,11 @@ abstract class SqliteTableApi {
 
   Future<List> getList({String orderBy = 'id desc', int limit = 50}) async {
     return await SqliteUtil.getList(
-        db: db, tableName: table, orderBy: orderBy, limit: limit);
+      db: db,
+      tableName: table,
+      orderBy: orderBy,
+      limit: limit,
+    );
   }
 }
 
@@ -61,21 +68,21 @@ class SqliteUtil {
 
   ///sql助手插入
   static Future insert(
-      Database db, String tableName, Map<String, dynamic> paramters) async {
+    Database db,
+    String tableName,
+    Map<String, dynamic> paramters,
+  ) async {
     var result = await db.insert(tableName, paramters);
     return result;
   }
 
-  static Future<List> getList(
-      {required Database db,
-      required String tableName,
-      String? orderBy,
-      int? limit}) async {
-    var result = await db.query(
-      tableName,
-      orderBy: 'id desc',
-      limit: limit,
-    );
+  static Future<List> getList({
+    required Database db,
+    required String tableName,
+    String? orderBy,
+    int? limit,
+  }) async {
+    var result = await db.query(tableName, orderBy: 'id desc', limit: limit);
     return result.toList();
   }
 }

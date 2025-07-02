@@ -3,12 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:we_chat_demo/common/channel/event_channel.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/common/common.dart';
-import 'package:we_chat_demo/common/widget/button/icon_button.dart';
-import 'package:we_chat_demo/common/widget/text_field/home_text_field.dart';
-import 'package:we_chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
+import 'package:chat_demo/common/channel/event_channel.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/common/common.dart';
+import 'package:chat_demo/common/widget/button/icon_button.dart';
+import 'package:chat_demo/common/widget/text_field/home_text_field.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
 
 class ChatBottomBar extends StatefulWidget {
   final ChatBottomBarController controller;
@@ -92,8 +92,9 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                   ),
                 ],
               ),
-              Builder(builder: (context) {
-                return ValueListenableBuilder(
+              Builder(
+                builder: (context) {
+                  return ValueListenableBuilder(
                     valueListenable: widget.controller.type,
                     builder: (context, type, child) {
                       double height = 34;
@@ -117,8 +118,8 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
 
                       final duration =
                           (widget.controller.lastType == 1 || type == 1)
-                              ? 0
-                              : 250;
+                          ? 0
+                          : 250;
                       _lastHeight = height;
                       return AnimatedContainer(
                         duration: Duration(milliseconds: duration),
@@ -126,8 +127,10 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                         curve: Curves.easeInOut,
                         child: child,
                       );
-                    });
-              })
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -136,8 +139,6 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
   }
 
   Widget setting() {
-    return Container(
-      color: Colors.red,
-    );
+    return Container(color: Colors.red);
   }
 }

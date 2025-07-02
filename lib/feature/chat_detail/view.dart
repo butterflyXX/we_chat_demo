@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/common/common.dart';
-import 'package:we_chat_demo/common/widget/app_bar.dart';
-import 'package:we_chat_demo/common/widget/button/icon_button.dart';
-import 'package:we_chat_demo/feature/chat_detail/state.dart';
-import 'package:we_chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar.dart';
-import 'package:we_chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
-import 'package:we_chat_demo/feature/chat_detail/widget/chat_item_widget.dart';
-import 'package:we_chat_demo/route/route_builder.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/common/common.dart';
+import 'package:chat_demo/common/widget/app_bar.dart';
+import 'package:chat_demo/common/widget/button/icon_button.dart';
+import 'package:chat_demo/feature/chat_detail/state.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_item_widget.dart';
+import 'package:chat_demo/route/route_builder.dart';
 
 class ChatDetailPage extends StatefulWidget with Routable {
   ChatDetailPage({super.key});
@@ -41,16 +41,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         state = context.read<ChatDetailState>();
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: commonAppbar(context,
-              title: widget.argument?["name"] ?? "",
-              actions: [
-                CommonIconButton(
-                  onTap: () {
-                    state.addTest();
-                  },
-                  child: const Icon(Icons.more_horiz),
-                ),
-              ]),
+          appBar: commonAppbar(
+            context,
+            title: widget.argument?["name"] ?? "",
+            actions: [
+              CommonIconButton(
+                onTap: () {
+                  state.addTest();
+                },
+                child: const Icon(Icons.more_horiz),
+              ),
+            ],
+          ),
           backgroundColor: commonAppBarBackColor,
           body: GestureDetector(
             onTap: () {
@@ -60,34 +62,31 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             child: Column(
               children: [
                 Expanded(
-                  child: LayoutBuilder(builder: (context, cons) {
-                    state.jumpWithAnimation?.call(false, true);
-                    return ValueListenableBuilder(
-                      valueListenable: state.dataList,
-                      builder: (context, list, child) {
-                        return ListView.separated(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          controller: state.controller,
-                          separatorBuilder: (_, __) {
-                            return const SizedBox(
-                              height: 20,
-                            );
-                          },
-                          itemCount: list.length,
-                          itemBuilder: (context, index) {
-                            final model = list[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              child: ChatItemWidget(
-                                myId: 2,
-                                model: model,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  }),
+                  child: LayoutBuilder(
+                    builder: (context, cons) {
+                      state.jumpWithAnimation?.call(false, true);
+                      return ValueListenableBuilder(
+                        valueListenable: state.dataList,
+                        builder: (context, list, child) {
+                          return ListView.separated(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            controller: state.controller,
+                            separatorBuilder: (_, __) {
+                              return const SizedBox(height: 20);
+                            },
+                            itemCount: list.length,
+                            itemBuilder: (context, index) {
+                              final model = list[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                child: ChatItemWidget(myId: 2, model: model),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
                 ChatBottomBar(
                   controller: barController,

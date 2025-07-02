@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/common/widget/button/icon_button.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/common/widget/button/icon_button.dart';
 
 AppBar commonAppbar(
   BuildContext context, {
@@ -33,7 +33,8 @@ AppBar commonAppbar(
     elevation: elevation,
     systemOverlayStyle: systemUiOverlayStyle,
     centerTitle: true,
-    title: textTitle ??
+    title:
+        textTitle ??
         Text(
           title ?? "",
           // style: TextStyle(
@@ -50,10 +51,7 @@ Widget backWidgetAction({VoidCallback? backAction, Color? tintColor}) {
     onTap: backAction,
     child: Container(
       margin: EdgeInsets.only(left: 10.w),
-      child: Icon(
-        Icons.arrow_back_ios,
-        color: tintColor,
-      ),
+      child: Icon(Icons.arrow_back_ios, color: tintColor),
     ),
   );
 }
@@ -61,9 +59,6 @@ Widget backWidgetAction({VoidCallback? backAction, Color? tintColor}) {
 Widget commonActionItem({required String title, VoidCallback? onTap}) {
   return CupertinoButton(
     onPressed: onTap,
-    child: Text(
-      title,
-      style: TextStyle(fontSize: 15.sp),
-    ),
+    child: Text(title, style: TextStyle(fontSize: 15.sp)),
   );
 }

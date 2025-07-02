@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/color.dart';
+import 'package:chat_demo/common/color.dart';
 
 class HomeTopSearchButton extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const HomeTopSearchButton({
-    this.onTap,
-    super.key,
-  });
+  const HomeTopSearchButton({this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +17,8 @@ class HomeTopSearchButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.search,
-              color: homeSearchTintColor,
-              size: 20,
-            ),
-            Text(
-              "搜索",
-              style: TextStyle(color: homeSearchTintColor),
-            ),
+            Icon(Icons.search, color: homeSearchTintColor, size: 20),
+            Text("搜索", style: TextStyle(color: homeSearchTintColor)),
           ],
         ),
       ),

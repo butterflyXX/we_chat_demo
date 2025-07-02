@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:we_chat_demo/common/color.dart';
-import 'package:we_chat_demo/feature/home_tab/state.dart';
-import 'package:we_chat_demo/route/route_builder.dart';
+import 'package:chat_demo/common/color.dart';
+import 'package:chat_demo/feature/home_tab/state.dart';
+import 'package:chat_demo/route/route_builder.dart';
 
 class HomeTab extends StatelessWidget with Routable {
   HomeTab({super.key});
@@ -24,26 +24,28 @@ class HomeTab extends StatelessWidget with Routable {
             physics: const NeverScrollableScrollPhysics(),
           ),
           bottomNavigationBar: ValueListenableBuilder(
-              valueListenable: state.currentIndex,
-              builder: (context, index, child) {
-                return BottomNavigationBar(
-                  currentIndex: index,
-                  selectedItemColor: selectedTabBarItemColor,
-                  unselectedItemColor: unselectedTabBarItemColor,
-                  backgroundColor: commonAppBarBackColor,
-                  unselectedFontSize: 10.sp,
-                  selectedFontSize: 10.sp,
-                  iconSize: 22.w,
-                  type: BottomNavigationBarType.fixed,
-                  onTap: state.changePage,
-                  items: state.tabBars.map((item) {
-                    return BottomNavigationBarItem(
-                        icon: item.icon,
-                        activeIcon: item.activeIcon,
-                        label: item.title);
-                  }).toList(),
-                );
-              }),
+            valueListenable: state.currentIndex,
+            builder: (context, index, child) {
+              return BottomNavigationBar(
+                currentIndex: index,
+                selectedItemColor: selectedTabBarItemColor,
+                unselectedItemColor: unselectedTabBarItemColor,
+                backgroundColor: commonAppBarBackColor,
+                unselectedFontSize: 10.sp,
+                selectedFontSize: 10.sp,
+                iconSize: 22.w,
+                type: BottomNavigationBarType.fixed,
+                onTap: state.changePage,
+                items: state.tabBars.map((item) {
+                  return BottomNavigationBarItem(
+                    icon: item.icon,
+                    activeIcon: item.activeIcon,
+                    label: item.title,
+                  );
+                }).toList(),
+              );
+            },
+          ),
           backgroundColor: Colors.white,
         );
       },

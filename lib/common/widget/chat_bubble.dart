@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/widget/chat_bubble_back.dart';
+import 'package:chat_demo/common/widget/chat_bubble_back.dart';
 
 class ChatBubble extends StatefulWidget {
   final bool inLeft;

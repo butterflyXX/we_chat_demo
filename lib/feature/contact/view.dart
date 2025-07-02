@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat_demo/common/widget/app_bar.dart';
+import 'package:chat_demo/common/widget/app_bar.dart';
 
 class Contact extends StatefulWidget {
   static const String title = "通讯录";
@@ -15,9 +15,7 @@ class _ContactState extends State<Contact> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return Scaffold(
       appBar: commonAppbar(context, title: Contact.title),
-      body: const Center(
-        child: Text(Contact.title),
-      ),
+      body: const Center(child: Text(Contact.title)),
     );
   }
 

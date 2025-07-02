@@ -1,35 +1,20 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
-import 'package:chat_demo/model/home_item_model.dart';
+import 'package:chat_demo/model/user_model.dart';
 import 'package:chat_demo/route/route_name.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class HomeState {
-  BuildContext context;
-  ValueNotifier<List<HomeItemModel>> dataList = ValueNotifier([]);
+part 'state.g.dart';
+part 'state.freezed.dart';
 
-  HomeState(this.context) {
-    loadData();
+@riverpod
+class Home extends _$Home {
+  @override
+  String build() {
+    return "test";
   }
 
-  void loadData() {
-    final current = DateTime.now();
-
-    Future.delayed(const Duration(seconds: 1)).then((value) {
-      dataList.value = List.generate(20, (index) {
-        return HomeItemModel(
-          icon: "icon",
-          title: "test-$index",
-          subTitle: "test-$index description sdhjsjdh1",
-          id: index,
-          time: current.millisecondsSinceEpoch - 1000 * 60 * 60 * index,
-          name: "名字 - $index",
-        );
-      });
-    });
-  }
-
-  void gotoChatDetail(HomeItemModel model) {
+  void gotoChatDetail(UserBaseModel model) {
     NavigatorManager.pushNamed(
       RouteName.chatDetail,
       arguments: {
@@ -37,4 +22,12 @@ class HomeState {
       },
     );
   }
+}
+
+@freezed
+abstract class HomeState with _$HomeState {
+  const factory HomeState({required String name}) = _HomeState;
+
+  factory HomeState.fromJson(Map<String, dynamic> json) =>
+      _$HomeStateFromJson(json);
 }

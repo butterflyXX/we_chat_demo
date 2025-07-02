@@ -1,0 +1,261 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Riverpod & Freezed 使用模式
+
+本文档记录了项目中使用Riverpod创建各种Provider和Freezed数据类的标准模式。
+
+## 基本Provider
+
+用于提供简单的静态值或计算结果：
+
+```dart
+/// 创建 Provider
+@Riverpod(keepAlive: true)
+String appName(Ref ref) => '小兵传奇';
+```
+
+## FutureProvider
+
+用于异步操作，返回Future：
+
+```dart
+/// 创建 FutureProvider
+@Riverpod(keepAlive: true)
+Future<List<String>> getCardList(Ref ref) async {
+  // 模拟网络请求
+  await Future.delayed(Duration(seconds: 2));
+  return ['1', '2', '3'];
+}
+```
+
+## StreamProvider
+
+用于数据流，返回Stream：
+
+```dart
+/// 创建 StreamProvider
+@Riverpod(keepAlive: true)
+Stream<int> tick(Ref ref) async* {
+  int i = 0;
+  while (true) {
+    yield i++;
+    await Future.delayed(Duration(seconds: 1));
+  }
+}
+```
+
+## ProviderFamily
+
+用于根据参数创建不同的Provider实例（示例被注释）：
+
+```dart
+/// 创建 ProviderFamily
+// @Riverpod(keepAlive: true)
+// String cardId(Ref ref, String cardId) => cardId;
+```
+
+## NotifierProvider
+
+用于管理可变状态，提供修改状态的方法：
+
+```dart
+/// 创建 NotifierProvider
+@Riverpod(keepAlive: true)
+class Counter extends _$Counter {
+  @override
+  int build() => 0;
+
+  void add() => state++;
+}
+```
+
+## AsyncNotifierProvider
+
+用于管理异步状态，提供异步修改状态的方法：
+
+```dart
+/// 创建 AsyncNotifierProvider
+@Riverpod(keepAlive: true)
+class UserInfoVm extends _$UserInfoVm {
+  @override
+  Future<UserInfo> build() async {
+    await Future.delayed(Duration(seconds: 1));
+    final info = UserInfo('name', 12, 1);
+    return info;
+  }
+
+  Future<void> setName(String newName) async {
+    // 模拟请求修改接口
+    final old = state.value;
+    if (old == null) return;
+    await Future.delayed(Duration(seconds: 1));
+    state = AsyncValue.data(old.copyWith(name: newName));
+  }
+
+  Future<void> setAge(int newAge) async {
+    // 模拟请求修改接口
+    final old = state.value;
+    if (old == null) return;
+    await Future.delayed(Duration(seconds: 1));
+    state = AsyncValue.data(old.copyWith(age: newAge));
+  }
+}
+```
+
+## NotifierProvider.family
+
+用于根据参数创建不同的NotifierProvider实例：
+
+```dart
+/// 创建 NotifierProvider.family
+@Riverpod(keepAlive: true)
+class SessionViewModel extends _$SessionViewModel {
+  @override
+  SessionInfo build(String id) {
+    final info = SessionInfo(id, 'name-$id', 0);
+    ref.onDispose(() {
+      // 清理资源
+    });
+    return info;
+  }
+
+  void addLike() {
+    state = state.copyWith(likeCount: state.likeCount + 1);
+  }
+}
+```
+
+## 使用注意事项
+
+1. **keepAlive**: 设置为`true`时，Provider会在没有监听者时保持活跃状态
+2. **状态管理**: 使用NotifierProvider和AsyncNotifierProvider来管理复杂的状态逻辑
+3. **资源清理**: 在`ref.onDispose()`中进行必要的资源清理
+4. **异步状态**: 使用`AsyncValue.data()`来更新AsyncNotifierProvider的状态
+5. **Family参数**: Family类型的Provider可以接收参数来创建不同的实例
+
+## 代码生成
+
+确保运行以下命令来生成必要的代码：
+
+```bash
+# 推荐方式 (使用FVM)
+fvm dart run build_runner build
+
+# 或者不使用FVM
+dart run build_runner build
+
+# 清理冲突文件后构建
+fvm dart run build_runner build --delete-conflicting-outputs
+
+# 监听模式（开发时推荐）
+fvm dart run build_runner watch
+```
+
+**注意**: 使用 `dart run` 而不是 `flutter run`，因为 build_runner 是 Dart 工具，不是 Flutter 应用。
+
+## Freezed 数据类创建模式
+
+### 基本Freezed类
+
+用于创建不可变数据类，自动生成 copyWith、toString、hashCode 等方法：
+
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_info.freezed.dart';
+part 'user_info.g.dart';
+
+@freezed
+abstract class UserInfo with _$UserInfo {
+  const factory UserInfo(
+    final String name, 
+    final int age, 
+    final int id
+  ) = _UserInfo;
+
+  factory UserInfo.fromJson(Map<String, dynamic> json) => _$UserInfoFromJson(json);
+}
+```
+
+### 带命名参数的Freezed类
+
+```dart
+@freezed
+abstract class SessionInfo with _$SessionInfo {
+  const factory SessionInfo({
+    required String id,
+    required String name,
+    required int likeCount,
+  }) = _SessionInfo;
+
+  factory SessionInfo.fromJson(Map<String, dynamic> json) => _$SessionInfoFromJson(json);
+}
+```
+
+### 带多个构造函数的Freezed类
+
+```dart
+@freezed
+abstract class ApiResult<T> with _$ApiResult<T> {
+  const factory ApiResult.success(T data) = Success<T>;
+  const factory ApiResult.error(String message) = Error<T>;
+  const factory ApiResult.loading() = Loading<T>;
+
+  factory ApiResult.fromJson(Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+      _$ApiResultFromJson(json, fromJsonT);
+}
+```
+
+### 带默认值的Freezed类
+
+```dart
+@freezed
+abstract class UserSettings with _$UserSettings {
+  const factory UserSettings({
+    @Default('') String username,
+    @Default(false) bool isDarkMode,
+    @Default(16.0) double fontSize,
+    @Default([]) List<String> favoriteColors,
+  }) = _UserSettings;
+
+  factory UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);
+}
+```
+
+### Freezed使用注意事项
+
+1. **必要的imports**: 需要导入 `freezed_annotation` 和 `json_annotation`
+2. **part指令**: 必须添加 `.freezed.dart` 和 `.g.dart` 的part指令
+3. **抽象类**: 使用 `abstract class` 关键字
+4. **工厂构造函数**: 使用 `const factory` 关键字
+5. **JSON序列化**: 添加 `fromJson` 工厂方法
+6. **默认值**: 使用 `@Default()` 注解设置默认值
+7. **泛型支持**: 可以使用泛型创建通用数据类
+
+### 与Riverpod结合使用
+
+```dart
+// 在AsyncNotifierProvider中使用Freezed类
+@Riverpod(keepAlive: true)
+class UserInfoVm extends _$UserInfoVm {
+  @override
+  Future<UserInfo> build() async {
+    await Future.delayed(Duration(seconds: 1));
+    return UserInfo('name', 12, 1);
+  }
+
+  Future<void> updateUser(UserInfo newInfo) async {
+    final old = state.value;
+    if (old == null) return;
+    
+    state = AsyncValue.data(old.copyWith(
+      name: newInfo.name,
+      age: newInfo.age,
+    ));
+  }
+}
+```

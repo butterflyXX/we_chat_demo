@@ -4,6 +4,9 @@ import 'package:chat_demo/feature/contact/view.dart';
 import 'package:chat_demo/feature/find/view.dart';
 import 'package:chat_demo/feature/home/view.dart';
 import 'package:chat_demo/feature/mine/view.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'state.g.dart';
 
 class TabBarItem {
   final Icon icon;
@@ -19,13 +22,15 @@ class TabBarItem {
   });
 }
 
-class HomeBarState {
+@Riverpod(keepAlive: true)
+class HomeBarState extends _$HomeBarState {
   PageController controller = PageController();
   List<TabBarItem> tabBars = [];
-  ValueNotifier currentIndex = ValueNotifier(0);
 
-  HomeBarState() {
+  @override
+  int build() {
     initPage();
+    return 0;
   }
 
   void initPage() {
@@ -72,7 +77,7 @@ class HomeBarState {
   }
 
   void changePage(int index) {
-    currentIndex.value = index;
+    state = index;
     controller.jumpToPage(index);
   }
 }

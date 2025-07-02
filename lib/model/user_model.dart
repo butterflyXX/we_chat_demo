@@ -1,4 +1,4 @@
-class HomeItemModel {
+class UserBaseModel {
   String icon;
   String title;
   String subTitle;
@@ -6,7 +6,7 @@ class HomeItemModel {
   int time;
   String name;
 
-  HomeItemModel({
+  UserBaseModel({
     required this.icon,
     required this.title,
     required this.subTitle,

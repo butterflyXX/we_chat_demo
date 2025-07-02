@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:chat_demo/common/color.dart';
-import 'package:chat_demo/model/home_item_model.dart';
+import 'package:chat_demo/model/user_model.dart';
 
 class HomeItemWidget extends StatelessWidget {
-  final HomeItemModel model;
+  final UserBaseModel model;
 
   const HomeItemWidget({super.key, required this.model});
 

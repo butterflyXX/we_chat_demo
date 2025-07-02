@@ -1,0 +1,35 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'state.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_HomeState _$HomeStateFromJson(Map<String, dynamic> json) =>
+    _HomeState(name: json['name'] as String);
+
+Map<String, dynamic> _$HomeStateToJson(_HomeState instance) =>
+    <String, dynamic>{'name': instance.name};
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+String _$homeHash() => r'2ab0d90ab2bbfa315f24909efaf06686c8b439fa';
+
+/// See also [Home].
+@ProviderFor(Home)
+final homeProvider = AutoDisposeNotifierProvider<Home, String>.internal(
+  Home.new,
+  name: r'homeProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$homeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$Home = AutoDisposeNotifier<String>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

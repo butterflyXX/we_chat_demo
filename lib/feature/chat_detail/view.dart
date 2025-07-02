@@ -71,7 +71,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           return ListView.separated(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             controller: state.controller,
-                            separatorBuilder: (_, __) {
+                            separatorBuilder: (_, _) {
                               return const SizedBox(height: 20);
                             },
                             itemCount: list.length,

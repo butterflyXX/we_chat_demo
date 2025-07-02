@@ -14,8 +14,8 @@ class _ContactState extends State<Contact> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: commonAppbar(context,title: Contact.title),
-      body: Center(
+      appBar: commonAppbar(context, title: Contact.title),
+      body: const Center(
         child: Text(Contact.title),
       ),
     );

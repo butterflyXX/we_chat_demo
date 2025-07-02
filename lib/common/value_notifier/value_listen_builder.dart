@@ -1,6 +1,5 @@
-
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'tuple.dart';
 
@@ -34,11 +33,11 @@ class ValueListenableTuple2Builder<T1, T2> extends ValueListenableListBuilder {
     required ValueTuple2WidgetBuilder<T1, T2> builder,
     super.child,
   }) : super(
-    valueListenables:
-    valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple2.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple2.fromList(value), child),
+        );
 }
 
 class ValueListenableTuple3Builder<T1, T2, T3>
@@ -46,16 +45,16 @@ class ValueListenableTuple3Builder<T1, T2, T3>
   ValueListenableTuple3Builder({
     super.key,
     required Tuple3<ValueListenable<T1>, ValueListenable<T2>,
-        ValueListenable<T3>>
-    valueListenables,
+            ValueListenable<T3>>
+        valueListenables,
     required ValueTuple3WidgetBuilder<T1, T2, T3> builder,
     super.child,
   }) : super(
-    valueListenables:
-    valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple3.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple3.fromList(value), child),
+        );
 }
 
 class ValueListenableTuple4Builder<T1, T2, T3, T4>
@@ -63,16 +62,16 @@ class ValueListenableTuple4Builder<T1, T2, T3, T4>
   ValueListenableTuple4Builder({
     super.key,
     required Tuple4<ValueListenable<T1>, ValueListenable<T2>,
-        ValueListenable<T3>, ValueListenable<T4>>
-    valueListenables,
+            ValueListenable<T3>, ValueListenable<T4>>
+        valueListenables,
     required ValueTuple4WidgetBuilder<T1, T2, T3, T4> builder,
     super.child,
   }) : super(
-    valueListenables:
-    valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple4.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple4.fromList(value), child),
+        );
 }
 
 class ValueListenableTuple5Builder<T1, T2, T3, T4, T5>
@@ -80,16 +79,16 @@ class ValueListenableTuple5Builder<T1, T2, T3, T4, T5>
   ValueListenableTuple5Builder({
     super.key,
     required Tuple5<ValueListenable<T1>, ValueListenable<T2>,
-        ValueListenable<T3>, ValueListenable<T4>, ValueListenable<T5>>
-    valueListenables,
+            ValueListenable<T3>, ValueListenable<T4>, ValueListenable<T5>>
+        valueListenables,
     required ValueTuple5WidgetBuilder<T1, T2, T3, T4, T5> builder,
     super.child,
   }) : super(
-    valueListenables:
-    valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple5.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple5.fromList(value), child),
+        );
 }
 
 class ValueListenableTuple6Builder<T1, T2, T3, T4, T5, T6>
@@ -97,42 +96,44 @@ class ValueListenableTuple6Builder<T1, T2, T3, T4, T5, T6>
   ValueListenableTuple6Builder({
     super.key,
     required Tuple6<
-        ValueListenable<T1>,
-        ValueListenable<T2>,
-        ValueListenable<T3>,
-        ValueListenable<T4>,
-        ValueListenable<T5>,
-        ValueListenable<T6>>
-    valueListenables,
+            ValueListenable<T1>,
+            ValueListenable<T2>,
+            ValueListenable<T3>,
+            ValueListenable<T4>,
+            ValueListenable<T5>,
+            ValueListenable<T6>>
+        valueListenables,
     required ValueTuple6WidgetBuilder<T1, T2, T3, T4, T5, T6> builder,
     super.child,
   }) : super(
-    valueListenables:
-    valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple6.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple6.fromList(value), child),
+        );
 }
 
-class ValueListenableTuple7Builder<T1, T2, T3, T4, T5, T6, T7> extends ValueListenableListBuilder {
+class ValueListenableTuple7Builder<T1, T2, T3, T4, T5, T6, T7>
+    extends ValueListenableListBuilder {
   ValueListenableTuple7Builder({
     super.key,
     required Tuple7<
-        ValueListenable<T1>,
-        ValueListenable<T2>,
-        ValueListenable<T3>,
-        ValueListenable<T4>,
-        ValueListenable<T5>,
-        ValueListenable<T6>,
-        ValueListenable<T7>>
-    valueListenables,
+            ValueListenable<T1>,
+            ValueListenable<T2>,
+            ValueListenable<T3>,
+            ValueListenable<T4>,
+            ValueListenable<T5>,
+            ValueListenable<T6>,
+            ValueListenable<T7>>
+        valueListenables,
     required ValueTuple7WidgetBuilder<T1, T2, T3, T4, T5, T6, T7> builder,
     super.child,
   }) : super(
-    valueListenables: valueListenables.toTypeList<ValueListenable<dynamic>>(),
-    builder: (context, value, child) =>
-        builder(context, Tuple7.fromList(value), child),
-  );
+          valueListenables:
+              valueListenables.toTypeList<ValueListenable<dynamic>>(),
+          builder: (context, value, child) =>
+              builder(context, Tuple7.fromList(value), child),
+        );
 }
 
 class ValueListenableListBuilder<T> extends StatefulWidget {
@@ -177,7 +178,7 @@ class _ValueListenableListBuilderState<T>
     super.didUpdateWidget(oldWidget);
   }
 
-  _removeListener(ValueListenableListBuilder widget) {
+  void _removeListener(ValueListenableListBuilder widget) {
     for (var element in widget.valueListenables) {
       element.removeListener(_valueChanged);
     }

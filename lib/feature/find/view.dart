@@ -14,8 +14,8 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: commonAppbar(context,title: Find.title),
-      body: Center(
+      appBar: commonAppbar(context, title: Find.title),
+      body: const Center(
         child: Text(Find.title),
       ),
     );

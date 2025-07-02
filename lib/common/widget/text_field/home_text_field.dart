@@ -11,7 +11,6 @@ class HomeTextField extends StatefulWidget {
 }
 
 class _HomeTextFieldState extends State<HomeTextField> {
-
   TextEditingController controller = TextEditingController();
 
   final focusNode = FocusNode();
@@ -22,7 +21,7 @@ class _HomeTextFieldState extends State<HomeTextField> {
     super.initState();
   }
 
-  _listener() {
+  void _listener() {
     if (focusNode.hasFocus) {
       widget.hasFocus?.call();
     }
@@ -38,9 +37,7 @@ class _HomeTextFieldState extends State<HomeTextField> {
   Widget build(BuildContext context) {
     return CupertinoTextField(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white
-      ),
+          borderRadius: BorderRadius.circular(5), color: Colors.white),
       controller: controller,
       focusNode: focusNode,
       maxLines: 10,

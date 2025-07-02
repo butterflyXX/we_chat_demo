@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_demo/common/color.dart';
+import 'package:we_chat_demo/common/common.dart';
 import 'package:we_chat_demo/common/widget/app_bar.dart';
 import 'package:we_chat_demo/common/widget/button/home_top_search_button.dart';
 import 'package:we_chat_demo/common/widget/button/icon_button.dart';
@@ -77,8 +78,8 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 final Directory tempDir = await getLibraryDirectory();
-                for(final file in tempDir.listSync()) {
-                  print(file);
+                for (final file in tempDir.listSync()) {
+                  llPrint(file);
                 }
               },
             ),
@@ -87,6 +88,5 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

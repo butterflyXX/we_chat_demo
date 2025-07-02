@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 EventChannel eventChannel = const EventChannel("event");
 StreamController keyBoardShowController = StreamController.broadcast();
 
-initEventChannel() {
+void initEventChannel() {
   eventChannel.receiveBroadcastStream().listen((event) {
-    if(event["name"] == "KeyboardWillShow") {
+    if (event["name"] == "KeyboardWillShow") {
       keyBoardShowController.add(event["value"]);
     }
   });

@@ -60,10 +60,10 @@ Widget backWidgetAction({VoidCallback? backAction, Color? tintColor}) {
 
 Widget commonActionItem({required String title, VoidCallback? onTap}) {
   return CupertinoButton(
+    onPressed: onTap,
     child: Text(
       title,
       style: TextStyle(fontSize: 15.sp),
     ),
-    onPressed: onTap,
   );
 }

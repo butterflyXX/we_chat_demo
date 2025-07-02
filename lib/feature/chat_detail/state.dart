@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:we_chat_demo/model/chat_item_model.dart';
 
-typedef JumpCallBack<T> = void Function(bool animation,bool nextFrame);
+typedef JumpCallBack<T> = void Function(bool animation, bool nextFrame);
 
 class ChatDetailState {
   final ValueNotifier<List<ChatItemModel>> dataList = ValueNotifier([]);
@@ -30,13 +29,13 @@ class ChatDetailState {
     "1好的,我已将您的简历发送至用人部门,后续初筛通过,我们会联系您!!!",
   ];
 
-  link() {
+  void link() {
     jumpWithAnimation = (animation, nextFrame) {
       void anim() {
         if (animation) {
           controller.animateTo(
             controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             curve: Curves.easeIn,
           );
         } else {
@@ -51,11 +50,10 @@ class ChatDetailState {
       } else {
         anim();
       }
-
     };
   }
 
-  loadData() {
+  void loadData() {
     // Future.delayed(Duration(seconds: 1)).then((value) {
     //   dataList.value = test.map((item) {
     //     final id = int.parse(item.substring(0,1));
@@ -68,7 +66,7 @@ class ChatDetailState {
     // });
   }
 
-  addTest() {
+  void addTest() {
     if (dataList.value.length == test.length) return;
     final item = test[dataList.value.length];
     final id = int.parse(item.substring(0, 1));
@@ -78,15 +76,13 @@ class ChatDetailState {
       text: text,
     );
     dataList.value = List.from(dataList.value..add(model));
-    jumpWithAnimation?.call(true,true);
+    jumpWithAnimation?.call(true, true);
   }
 
-  send(String value) {
+  void send(String value) {
     test.add(value);
     addTest();
   }
 
-  hasFocus() {
-
-  }
+  void hasFocus() {}
 }

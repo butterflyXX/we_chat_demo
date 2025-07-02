@@ -1,22 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:we_chat_demo/common/navigator/navigator_manager.dart';
-import 'package:we_chat_demo/feature/chat_detail/view.dart';
 import 'package:we_chat_demo/model/home_item_model.dart';
 import 'package:we_chat_demo/route/route_name.dart';
 
 class HomeState {
-  BuildContext _context;
+  BuildContext context;
   ValueNotifier<List<HomeItemModel>> dataList = ValueNotifier([]);
 
-  HomeState(this._context) {
+  HomeState(this.context) {
     loadData();
   }
 
   void loadData() {
     final current = DateTime.now();
 
-    Future.delayed(Duration(seconds: 1)).then((value) {
+    Future.delayed(const Duration(seconds: 1)).then((value) {
       dataList.value = List.generate(20, (index) {
         return HomeItemModel(
           icon: "icon",
@@ -30,7 +29,7 @@ class HomeState {
     });
   }
 
-  gotoChatDetail(HomeItemModel model) {
+  void gotoChatDetail(HomeItemModel model) {
     NavigatorManager.pushNamed(
       RouteName.chatDetail,
       arguments: {

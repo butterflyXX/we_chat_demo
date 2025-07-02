@@ -1,20 +1,14 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat_demo/common/color.dart';
 import 'package:we_chat_demo/common/common.dart';
-import 'package:we_chat_demo/common/navigator/navigator_manager.dart';
 import 'package:we_chat_demo/common/widget/app_bar.dart';
 import 'package:we_chat_demo/common/widget/button/icon_button.dart';
-import 'package:we_chat_demo/common/widget/chat_bubble.dart';
 import 'package:we_chat_demo/feature/chat_detail/state.dart';
 import 'package:we_chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar.dart';
 import 'package:we_chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
 import 'package:we_chat_demo/feature/chat_detail/widget/chat_item_widget.dart';
-import 'package:we_chat_demo/model/home_item_model.dart';
 import 'package:we_chat_demo/route/route_builder.dart';
 
 class ChatDetailPage extends StatefulWidget with Routable {
@@ -35,12 +29,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Provider(
       create: (context) => ChatDetailState(),
       dispose: (context, value) {
-        print(value);
+        llPrint(value);
       },
       builder: (context, child) {
         state = context.read<ChatDetailState>();
@@ -71,10 +66,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       valueListenable: state.dataList,
                       builder: (context, list, child) {
                         return ListView.separated(
-                          padding: EdgeInsets.symmetric(vertical: 20),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
                           controller: state.controller,
                           separatorBuilder: (_, __) {
-                            return SizedBox(
+                            return const SizedBox(
                               height: 20,
                             );
                           },

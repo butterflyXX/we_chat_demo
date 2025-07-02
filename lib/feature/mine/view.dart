@@ -13,8 +13,8 @@ class _MineState extends State<Mine> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: commonAppbar(context,title: Mine.title),
-      body: Center(
+      appBar: commonAppbar(context, title: Mine.title),
+      body: const Center(
         child: Text(Mine.title),
       ),
     );

@@ -10,7 +10,6 @@ import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/widget/app_bar.dart';
 import 'package:chat_demo/common/widget/button/home_top_search_button.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
-import 'package:chat_demo/feature/home/state.dart';
 import 'package:chat_demo/feature/home/widget/home_item_widget.dart';
 
 class Home extends ConsumerStatefulWidget {

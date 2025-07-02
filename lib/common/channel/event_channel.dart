@@ -6,9 +6,9 @@ EventChannel eventChannel = const EventChannel("event");
 StreamController keyBoardShowController = StreamController.broadcast();
 
 void initEventChannel() {
-  eventChannel.receiveBroadcastStream().listen((event) {
-    if (event["name"] == "KeyboardWillShow") {
-      keyBoardShowController.add(event["value"]);
-    }
-  });
+  // eventChannel.receiveBroadcastStream().listen((event) {
+  //   if (event["name"] == "KeyboardWillShow") {
+  //     keyBoardShowController.add(event["value"]);
+  //   }
+  // });
 }

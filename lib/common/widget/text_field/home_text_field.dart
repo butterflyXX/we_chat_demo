@@ -42,10 +42,11 @@ class _HomeTextFieldState extends State<HomeTextField> {
       focusNode: focusNode,
       maxLines: 10,
       minLines: 1,
-      textInputAction: TextInputAction.continueAction,
+      textInputAction: TextInputAction.send,
       onSubmitted: (value) {
         widget.onSubmit?.call(value);
         controller.clear();
+        focusNode.requestFocus();
       },
     );
   }

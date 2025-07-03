@@ -100,7 +100,9 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
                     child: setting(),
                   );
 
-                  final duration = (type == ChatBottomBarInputType.keyboard)
+                  final duration =
+                      (controller.lastType == ChatBottomBarInputType.keyboard ||
+                          type == ChatBottomBarInputType.keyboard)
                       ? 0
                       : 250;
                   _lastHeight = height;

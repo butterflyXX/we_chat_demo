@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class HomeTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmit;
-  final VoidCallback? hasFocus;
+  final ValueChanged<bool>? hasFocus;
   const HomeTextField({this.onSubmit, this.hasFocus, super.key});
 
   @override
@@ -22,9 +22,7 @@ class _HomeTextFieldState extends State<HomeTextField> {
   }
 
   void _listener() {
-    if (focusNode.hasFocus) {
-      widget.hasFocus?.call();
-    }
+    widget.hasFocus?.call(focusNode.hasFocus);
   }
 
   @override
@@ -37,7 +35,9 @@ class _HomeTextFieldState extends State<HomeTextField> {
   Widget build(BuildContext context) {
     return CupertinoTextField(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5), color: Colors.white),
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+      ),
       controller: controller,
       focusNode: focusNode,
       maxLines: 10,

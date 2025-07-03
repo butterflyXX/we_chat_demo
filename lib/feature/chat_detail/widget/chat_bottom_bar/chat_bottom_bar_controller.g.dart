@@ -1,26 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'state.dart';
+part of 'chat_bottom_bar_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatDetailVMHash() => r'5496641b5187bbc558a7f80ed24e287c6db77dde';
+String _$chatBottomBarControllerHash() =>
+    r'6373a0662def423c5721610e534f3c8953a845ac';
 
-/// See also [ChatDetailVM].
-@ProviderFor(ChatDetailVM)
-final chatDetailVMProvider =
-    AutoDisposeNotifierProvider<ChatDetailVM, ChatDetailState>.internal(
-      ChatDetailVM.new,
-      name: r'chatDetailVMProvider',
+/// See also [ChatBottomBarController].
+@ProviderFor(ChatBottomBarController)
+final chatBottomBarControllerProvider =
+    AutoDisposeNotifierProvider<
+      ChatBottomBarController,
+      ChatBottomBarInputType
+    >.internal(
+      ChatBottomBarController.new,
+      name: r'chatBottomBarControllerProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$chatDetailVMHash,
+          : _$chatBottomBarControllerHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$ChatDetailVM = AutoDisposeNotifier<ChatDetailState>;
+typedef _$ChatBottomBarController = AutoDisposeNotifier<ChatBottomBarInputType>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

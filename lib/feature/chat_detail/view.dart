@@ -20,19 +20,18 @@ class ChatDetailPage extends ConsumerStatefulWidget {
 }
 
 class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
-  final barController = ChatBottomBarController();
-
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(chatDetailVMProvider(widget.userId).notifier).link();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   ref.read(chatDetailVMProvider(widget.userId).notifier).link();
+    // });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(chatDetailVMProvider(widget.userId).notifier);
+    final stateNotifier = ref.watch(chatDetailVMProvider.notifier);
+    final state = ref.watch(chatDetailVMProvider);
     final chatList = ref.watch(chatListProvider(widget.userId));
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -45,16 +44,20 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       ),
       backgroundColor: commonAppBarBackColor,
       body: GestureDetector(
-        onTap: () {
-          cancelKeyBoard();
-          barController.setType(0);
+        behavior: HitTestBehavior.opaque,
+        onTap: _unfocus,
+        onVerticalDragStart: (_) {
+          _unfocus();
         },
         child: Column(
           children: [
             Expanded(
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                controller: state.controller,
+                physics: state.canScroll
+                    ? null
+                    : const NeverScrollableScrollPhysics(),
+                controller: stateNotifier.controller,
                 separatorBuilder: (_, _) {
                   return const SizedBox(height: 20);
                 },
@@ -69,16 +72,24 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               ),
             ),
             ChatBottomBar(
-              controller: barController,
-              hasFocus: state.hasFocus,
+              hasFocus: stateNotifier.hasFocus,
               onSubmit: (value) {
-                state.send(value);
-                // return false;
+                stateNotifier.send(widget.userId, value);
+              },
+              keyboardFrameChange: () {
+                stateNotifier.link(false, false);
               },
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _unfocus() {
+    ref
+        .read(chatBottomBarControllerProvider.notifier)
+        .setType(ChatBottomBarInputType.normal);
+    cancelKeyBoard();
   }
 }

@@ -23,7 +23,7 @@ List<String> test = [
 class ChatList extends _$ChatList {
   @override
   List<ChatItemModel> build(String userId) {
-    return test.map((e) => ChatItemModel(id: 0, text: e)).toList();
+    return [];
   }
 
   void addTest(String value) {
@@ -31,6 +31,6 @@ class ChatList extends _$ChatList {
     final id = int.parse(item.substring(0, 1));
     final text = item.substring(1, item.length);
     final model = ChatItemModel(id: id, text: text);
-    state.add(model);
+    state = [...state, model];
   }
 }

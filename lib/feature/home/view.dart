@@ -33,12 +33,16 @@ class _HomeState extends ConsumerState<Home>
         title: Home.title,
         actions: [
           CommonIconButton(
-            onTap: () {},
+            onTap: () {
+              ref.read(userListProvider.notifier).addUser();
+            },
             child: const Icon(Icons.add_circle_outline),
           ),
         ],
         leading: CommonIconButton(
-          onTap: () {},
+          onTap: () {
+            ref.read(userListProvider.notifier).deleteUserList();
+          },
           child: const Icon(Icons.more_horiz),
         ),
       ),

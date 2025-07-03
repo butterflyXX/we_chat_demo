@@ -1,17 +1,19 @@
+import 'package:chat_demo/common/data_base/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:chat_demo/common/color.dart';
-import 'package:chat_demo/model/user_model.dart';
 
 class HomeItemWidget extends StatelessWidget {
-  final UserBaseModel model;
+  final UserTableInfoData model;
 
   const HomeItemWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(model.time);
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+      model.createdAt.millisecondsSinceEpoch,
+    );
     return SizedBox(
       height: 72.w,
       child: Padding(
@@ -35,9 +37,9 @@ class HomeItemWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(model.title, style: TextStyle(fontSize: 16.sp)),
+                      Text(model.name, style: TextStyle(fontSize: 16.sp)),
                       Text(
-                        DateFormat("yyyy-MM-dd HH:mm").format(dateTime),
+                        DateFormat("yyyy-MM-dd HH:mm:ss").format(dateTime),
                         style: TextStyle(
                           color: disableTintColor,
                           fontSize: 12.sp,
@@ -46,7 +48,7 @@ class HomeItemWidget extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    model.subTitle,
+                    model.name,
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: homeSearchTintColor,

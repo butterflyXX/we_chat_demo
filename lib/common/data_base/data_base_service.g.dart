@@ -1,30 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'chat_bottom_bar_controller.dart';
+part of 'data_base_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatBottomBarControllerHash() =>
-    r'7a54836dc4fcf725f06ab7ad3c5b3754eca28f97';
+String _$dataBaseServiceHash() => r'146f3e3179f075e5f4a37cc1874f116fab3b7602';
 
-/// See also [ChatBottomBarController].
-@ProviderFor(ChatBottomBarController)
-final chatBottomBarControllerProvider =
-    AutoDisposeNotifierProvider<
-      ChatBottomBarController,
-      ChatBottomBarInputType
-    >.internal(
-      ChatBottomBarController.new,
-      name: r'chatBottomBarControllerProvider',
+/// See also [DataBaseService].
+@ProviderFor(DataBaseService)
+final dataBaseServiceProvider =
+    AutoDisposeNotifierProvider<DataBaseService, AppDatabase>.internal(
+      DataBaseService.new,
+      name: r'dataBaseServiceProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$chatBottomBarControllerHash,
+          : _$dataBaseServiceHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$ChatBottomBarController = AutoDisposeNotifier<ChatBottomBarInputType>;
+typedef _$DataBaseService = AutoDisposeNotifier<AppDatabase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

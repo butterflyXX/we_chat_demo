@@ -1,4 +1,6 @@
-import 'package:chat_demo/model/user_model.dart';
+import 'package:chat_demo/common/data_base/data_base_service.dart';
+import 'package:chat_demo/common/data_base/database.dart';
+import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_list.g.dart';
@@ -6,22 +8,32 @@ part 'user_list.g.dart';
 @Riverpod(keepAlive: true)
 class UserList extends _$UserList {
   @override
-  Future<List<UserBaseModel>> build() async {
+  Future<List<UserTableInfoData>> build() async {
     return await loadData();
   }
 
-  Future<List<UserBaseModel>> loadData() async {
-    final current = DateTime.now();
-    await Future.delayed(const Duration(seconds: 1));
-    return List.generate(20, (index) {
-      return UserBaseModel(
-        icon: "icon",
-        title: "test-$index",
-        subTitle: "test-$index description sdhjsjdh1",
-        id: index,
-        time: current.millisecondsSinceEpoch - 1000 * 60 * 60 * index,
-        name: "名字 - $index",
-      );
-    });
+  Future<List<UserTableInfoData>> loadData() async {
+    return await ref.read(dataBaseServiceProvider.notifier).getUsers();
+  }
+
+  void addUser() async {
+    await ref
+        .read(dataBaseServiceProvider.notifier)
+        .insertOrUpdateUser(
+          UserTableInfoCompanion(
+            name: Value('小米南瓜1'),
+            createdAt: Value(DateTime.now()),
+          ),
+        );
+    reloadData();
+  }
+
+  void reloadData() async {
+    state = AsyncData(await loadData());
+  }
+
+  void deleteUserList() async {
+    await ref.read(dataBaseServiceProvider.notifier).deleteUserList();
+    reloadData();
   }
 }

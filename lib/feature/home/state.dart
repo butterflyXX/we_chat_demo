@@ -1,5 +1,5 @@
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
-import 'package:chat_demo/model/user_model.dart';
+import 'package:chat_demo/common/data_base/database.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,11 +10,9 @@ part 'state.freezed.dart';
 @riverpod
 class Home extends _$Home {
   @override
-  String build() {
-    return "test";
-  }
+  String build() => "test";
 
-  void gotoChatDetail(UserBaseModel model) {
+  void gotoChatDetail(UserTableInfoData model) {
     NavigatorManager.push(ChatDetailRoute(userId: model.name));
   }
 }

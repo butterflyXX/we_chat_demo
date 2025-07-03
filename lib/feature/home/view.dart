@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_demo/common/providers/user_list.dart';
+import 'package:chat_demo/feature/home/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,8 +58,15 @@ class _HomeState extends ConsumerState<Home>
               .when(
                 data: (data) => SliverList.builder(
                   itemCount: data.length,
-                  itemBuilder: (context, index) =>
-                      HomeItemWidget(model: data[index]),
+                  itemBuilder: (context, index) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      ref
+                          .read(homeProvider.notifier)
+                          .gotoChatDetail(data[index]);
+                    },
+                    child: HomeItemWidget(model: data[index]),
+                  ),
                 ),
                 error: (error, stackTrace) => SliverToBoxAdapter(),
                 loading: () => const SliverToBoxAdapter(),

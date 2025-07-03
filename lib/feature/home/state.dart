@@ -1,6 +1,6 @@
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
 import 'package:chat_demo/model/user_model.dart';
-import 'package:chat_demo/route/route_name.dart';
+import 'package:chat_demo/route/route.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -15,12 +15,7 @@ class Home extends _$Home {
   }
 
   void gotoChatDetail(UserBaseModel model) {
-    NavigatorManager.pushNamed(
-      RouteName.chatDetail,
-      arguments: {
-        "params": {"name": model.name},
-      },
-    );
+    NavigatorManager.push(ChatDetailRoute(userId: model.name));
   }
 }
 

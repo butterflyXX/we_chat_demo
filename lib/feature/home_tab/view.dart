@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chat_demo/common/color.dart';
 import 'package:chat_demo/feature/home_tab/state.dart';
-import 'package:chat_demo/route/route_builder.dart';
 
-class HomeTab extends ConsumerWidget with Routable {
-  HomeTab({super.key});
+class HomeTab extends ConsumerWidget {
+  const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

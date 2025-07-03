@@ -16,16 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Flutter Demo',
-        navigatorKey: NavigatorManager.navigatorKey,
         theme: ThemeData(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           splashFactory: NoSplash.splashFactory,
         ),
-        routes: LXCRoute.routes,
-        navigatorObservers: [HistoryObserver()],
+        routerConfig: router,
       ),
     );
   }

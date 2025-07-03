@@ -1,0 +1,36 @@
+import 'package:chat_demo/model/chat_item_model.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'chat_list.g.dart';
+
+List<String> test = [
+  "1你好!",
+  "2你是?",
+  "1我是boss直聘的HR,收到您的简历想了解一下",
+  "2哦,请问是什么岗位,我是iOS方向的,可以做flutter或者iOS原生",
+  "1我们这个岗位是杀猪的",
+  "1要求会C++,JAVA,以及小程序",
+  "1您这边有实际的杀猪经验吗?",
+  "1有没有已经上线的猪",
+  "2有的,杀过的猪目前上线有5,6个了,有纯原生的猪还有和flutter混编的猪,原生与flutter占比在50%左右",
+  "1好的,我已将您的简历发送至用人部门,后续初筛通过,我们会联系您!!!",
+  "1好的,我已将您的简历发送至用人部门,后续初筛通过,我们会联系您!!!",
+  "1好的,我已将您的简历发送至用人部门,后续初筛通过,我们会联系您!!!",
+  "1好的,我已将您的简历发送至用人部门,后续初筛通过,我们会联系您!!!",
+];
+
+@riverpod
+class ChatList extends _$ChatList {
+  @override
+  List<ChatItemModel> build(String userId) {
+    return test.map((e) => ChatItemModel(id: 0, text: e)).toList();
+  }
+
+  void addTest(String value) {
+    final item = test[state.length % test.length];
+    final id = int.parse(item.substring(0, 1));
+    final text = item.substring(1, item.length);
+    final model = ChatItemModel(id: id, text: text);
+    state.add(model);
+  }
+}

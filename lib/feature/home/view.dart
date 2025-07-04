@@ -25,6 +25,12 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home>
     with AutomaticKeepAliveClientMixin {
   @override
+  void initState() {
+    llPrint('首页');
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(

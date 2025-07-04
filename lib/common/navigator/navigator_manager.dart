@@ -9,4 +9,12 @@ class NavigatorManager {
   static void pop<T extends Object?>([T? result]) {
     return router.pop(result);
   }
+
+  static void go(String path) {
+    router.go(path);
+  }
+
+  static void login() {
+    router.go(LoginRoute().location);
+  }
 }

@@ -1,4 +1,7 @@
+import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:chat_demo/common/mqtt/chat_manager.dart';
+import 'package:chat_demo/common/config/mqtt_config.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,15 +34,37 @@ class _LoginPageState extends State<LoginPage> {
           Consumer(
             builder: (context, ref, child) {
               return ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final userInfo = UserInfo(
+                    id: idController.text,
+                    name: nameController.text,
+                  );
+
+                  // 设置用户信息
                   ref
                       .read(userInfoNotifierProvider.notifier)
-                      .setUserInfo(
-                        UserInfo(
-                          id: idController.text,
-                          name: nameController.text,
-                        ),
-                      );
+                      .setUserInfo(userInfo);
+
+                  // 初始化 ChatManager
+                  try {
+                    final chatManager = ref.read(chatManagerProvider);
+                    await chatManager.initialize(
+                      userId: userInfo.id,
+                      userName: userInfo.name,
+                      userAvatar: '', // 当前没有头像信息
+                      broker: MqttConfig.defaultBroker,
+                      port: MqttConfig.defaultPort,
+                      username: MqttConfig.defaultUsername,
+                      password: MqttConfig.defaultPassword,
+                    );
+
+                    // 连接到 MQTT 服务器
+                    await chatManager.connect();
+                  } catch (e) {
+                    llPrint('MQTT 连接失败: $e');
+                  }
+
+                  // 跳转到主页
                   router.go(HomeRoute().location);
                 },
                 child: const Text('Login'),

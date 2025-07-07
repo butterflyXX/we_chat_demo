@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:chat_demo/common/navigator/navigator_manager.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/feature/home/state.dart';
+import 'package:chat_demo/route/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +42,7 @@ class _HomeState extends ConsumerState<Home>
         actions: [
           CommonIconButton(
             onTap: () {
-              ref.read(userListProvider.notifier).addUser();
+              NavigatorManager.push(AddUserRoute());
             },
             child: const Icon(Icons.add_circle_outline),
           ),

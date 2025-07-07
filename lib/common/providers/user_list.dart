@@ -16,12 +16,13 @@ class UserList extends _$UserList {
     return await ref.read(dataBaseServiceProvider.notifier).getUsers();
   }
 
-  void addUser() async {
+  void addUser(String id, String name) async {
     await ref
         .read(dataBaseServiceProvider.notifier)
         .insertOrUpdateUser(
           UserTableInfoCompanion(
-            name: Value('小米南瓜1'),
+            name: Value(name),
+            userId: Value(id),
             createdAt: Value(DateTime.now()),
           ),
         );

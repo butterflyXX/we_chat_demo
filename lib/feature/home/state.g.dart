@@ -16,7 +16,7 @@ Map<String, dynamic> _$HomeStateToJson(_HomeState instance) =>
 // RiverpodGenerator
 // **************************************************************************
 
-String _$homeHash() => r'3e946229d7c418e4b763d1f7687e3c6461ad7ac0';
+String _$homeHash() => r'b59ce90d4d0956865065ffb753c9386d3c76cbde';
 
 /// See also [Home].
 @ProviderFor(Home)

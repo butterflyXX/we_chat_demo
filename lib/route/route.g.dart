@@ -18,7 +18,7 @@ RouteBase get $homeRoute => GoRouteData.$route(
 
       factory: _$ChatDetailRoute._fromState,
     ),
-    GoRouteData.$route(path: 'mqtt_chat', factory: _$MqttChatRoute._fromState),
+    GoRouteData.$route(path: 'add_user', factory: _$AddUserRoute._fromState),
   ],
 );
 
@@ -68,19 +68,11 @@ mixin _$ChatDetailRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
-mixin _$MqttChatRoute on GoRouteData {
-  static MqttChatRoute _fromState(GoRouterState state) => MqttChatRoute(
-    chatId: state.uri.queryParameters['chat-id']!,
-    chatName: state.uri.queryParameters['chat-name']!,
-  );
-
-  MqttChatRoute get _self => this as MqttChatRoute;
+mixin _$AddUserRoute on GoRouteData {
+  static AddUserRoute _fromState(GoRouterState state) => const AddUserRoute();
 
   @override
-  String get location => GoRouteData.$location(
-    '/mqtt_chat',
-    queryParams: {'chat-id': _self.chatId, 'chat-name': _self.chatName},
-  );
+  String get location => GoRouteData.$location('/add_user');
 
   @override
   void go(BuildContext context) => context.go(location);

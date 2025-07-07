@@ -13,7 +13,7 @@ class Home extends _$Home {
   String build() => "test";
 
   void gotoChatDetail(UserTableInfoData model) {
-    NavigatorManager.push(ChatDetailRoute(userId: model.name));
+    NavigatorManager.push(ChatDetailRoute(userId: model.userId));
   }
 }
 

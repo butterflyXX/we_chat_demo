@@ -6,6 +6,7 @@ part 'database.g.dart';
 
 class UserTableInfo extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get userId => text()();
   TextColumn get name => text().withLength(min: 1, max: 32)();
   DateTimeColumn get createdAt => dateTime()();
 }
@@ -14,7 +15,7 @@ class UserTableInfo extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(

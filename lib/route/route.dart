@@ -1,7 +1,7 @@
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:chat_demo/feature/add_user/add_user.dart';
 import 'package:chat_demo/feature/login/login.dart';
-import 'package:chat_demo/feature/mqtt_chat/mqtt_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_demo/feature/chat_detail/view.dart';
 import 'package:chat_demo/feature/home_tab/view.dart';
@@ -44,7 +44,7 @@ final router = GoRouter(
   path: '/',
   routes: [
     TypedGoRoute<ChatDetailRoute>(path: 'chat_detail'),
-    TypedGoRoute<MqttChatRoute>(path: 'mqtt_chat'),
+    TypedGoRoute<AddUserRoute>(path: 'add_user'),
   ],
 )
 class HomeRoute extends GoRouteData with _$HomeRoute {
@@ -63,14 +63,12 @@ class ChatDetailRoute extends GoRouteData with _$ChatDetailRoute {
       ChatDetailPage(userId: userId);
 }
 
-class MqttChatRoute extends GoRouteData with _$MqttChatRoute {
-  final String chatId;
-  final String chatName;
-  const MqttChatRoute({required this.chatId, required this.chatName});
+class AddUserRoute extends GoRouteData with _$AddUserRoute {
+  const AddUserRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      MqttChatPage(chatId: chatId, chatName: chatName);
+      const AddUserPage();
 }
 
 @TypedGoRoute<LoginRoute>(path: '/login')

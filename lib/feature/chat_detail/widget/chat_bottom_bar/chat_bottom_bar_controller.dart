@@ -11,7 +11,7 @@ enum ChatBottomBarInputType { normal, keyboard, setting }
 class ChatBottomBarController extends _$ChatBottomBarController {
   final controller = TextEditingController();
   @override
-  ChatBottomBarInputType build() => ChatBottomBarInputType.normal;
+  ChatBottomBarInputType build(String chatId) => ChatBottomBarInputType.normal;
 
   ChatBottomBarInputType lastType = ChatBottomBarInputType.normal;
   void setType(ChatBottomBarInputType newType) {
@@ -19,9 +19,9 @@ class ChatBottomBarController extends _$ChatBottomBarController {
     lastType = state;
     state = newType;
     if (newType == ChatBottomBarInputType.normal) {
-      ref.read(chatDetailVMProvider.notifier).setCanScroll(true);
+      ref.read(chatDetailVMProvider(chatId).notifier).setCanScroll(true);
     } else {
-      ref.read(chatDetailVMProvider.notifier).setCanScroll(false);
+      ref.read(chatDetailVMProvider(chatId).notifier).setCanScroll(false);
     }
   }
 }

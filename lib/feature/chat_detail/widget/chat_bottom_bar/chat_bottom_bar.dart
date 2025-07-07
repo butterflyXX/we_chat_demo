@@ -9,11 +9,13 @@ import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatBottomBar extends ConsumerStatefulWidget {
+  final String chatId;
   final ValueChanged<String>? onSubmit;
   final ValueChanged<bool>? hasFocus;
   final VoidCallback? keyboardFrameChange;
 
   const ChatBottomBar({
+    required this.chatId,
     this.onSubmit,
     this.hasFocus,
     this.keyboardFrameChange,
@@ -29,7 +31,9 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
 
   double _lastKeyboardHeight = 0.0;
 
-  late final controller = ref.read(chatBottomBarControllerProvider.notifier);
+  late final controller = ref.read(
+    chatBottomBarControllerProvider(widget.chatId).notifier,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +84,9 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
               ),
               Consumer(
                 builder: (context, ref, child) {
-                  final type = ref.watch(chatBottomBarControllerProvider);
+                  final type = ref.watch(
+                    chatBottomBarControllerProvider(widget.chatId),
+                  );
                   double height = 34;
                   if (type == ChatBottomBarInputType.normal) {
                     height = mediaQuery.viewInsets.bottom;

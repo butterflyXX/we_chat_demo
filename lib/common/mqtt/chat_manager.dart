@@ -80,7 +80,7 @@ class ChatManager {
   String _currentUserId = '';
 
   ChatManager(this.ref) {
-    _mqttService = ref.read(mqttServiceProvider);
+    _mqttService = ref.read(mqttServiceNotifierProvider);
     _initialize();
   }
 
@@ -169,6 +169,11 @@ class ChatManager {
   // 获取缓存的消息
   List<ChatMessage> getCachedMessages(String chatId) {
     return _messageCache[chatId] ?? [];
+  }
+
+  // 断开MQTT连接
+  Future<void> disconnect() async {
+    await _mqttService.disconnect();
   }
 
   // 清理资源

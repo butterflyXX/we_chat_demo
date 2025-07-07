@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chat_demo/common/color.dart';
 import 'package:chat_demo/common/widget/chat_bubble.dart';
-import 'package:chat_demo/model/chat_item_model.dart';
+import 'package:chat_demo/common/mqtt/chat_manager.dart';
 
 class ChatItemWidget extends StatelessWidget {
-  final ChatItemModel model;
-  final int myId;
+  final ChatMessage model;
+  final String myId;
 
   const ChatItemWidget({required this.model, required this.myId, super.key});
 
@@ -58,7 +58,7 @@ class ChatItemWidget extends StatelessWidget {
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: ChatBubble(
-            text: model.text,
+            text: model.content,
             inLeft: !isMe(),
             textBackColor: isMe() ? selectedTabBarItemColor : Colors.white,
           ),
@@ -68,6 +68,21 @@ class ChatItemWidget extends StatelessWidget {
   }
 
   bool isMe() {
-    return myId == model.id;
+    return myId == model.senderId;
   }
+
+  // String _formatTime(DateTime time) {
+  //   final now = DateTime.now();
+  //   final difference = now.difference(time);
+
+  //   if (difference.inDays > 0) {
+  //     return '${difference.inDays}天前';
+  //   } else if (difference.inHours > 0) {
+  //     return '${difference.inHours}小时前';
+  //   } else if (difference.inMinutes > 0) {
+  //     return '${difference.inMinutes}分钟前';
+  //   } else {
+  //     return '刚刚';
+  //   }
+  // }
 }

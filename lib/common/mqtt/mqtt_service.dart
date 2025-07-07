@@ -3,28 +3,26 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'mqtt_service.g.dart';
 
 // MQTT 服务提供者
-final mqttServiceProvider = Provider<MqttService>((ref) {
-  return MqttService();
-});
+@Riverpod(keepAlive: true)
+class MqttServiceNotifier extends _$MqttServiceNotifier {
+  @override
+  MqttService build() {
+    return MqttService();
+  }
+
+  MqttConnectionState get connectionState => state.connectionState.value;
+}
 
 // MQTT 连接状态提供者
-final mqttConnectionStateProvider =
-    StateNotifierProvider<MqttConnectionNotifier, MqttConnectionState>((ref) {
-      return MqttConnectionNotifier();
-    });
-
-// 消息流提供者
-final mqttMessageStreamProvider = StreamProvider<MqttMessageData>((ref) {
-  final mqttService = ref.watch(mqttServiceProvider);
-  return mqttService.messageStream;
-});
-
-// 连接状态管理器
-class MqttConnectionNotifier extends StateNotifier<MqttConnectionState> {
-  MqttConnectionNotifier() : super(MqttConnectionState.disconnected);
+@Riverpod(keepAlive: true)
+class MqttConnectionNotifier extends _$MqttConnectionNotifier {
+  @override
+  MqttConnectionState build() => MqttConnectionState.disconnected;
 
   void setConnectionState(MqttConnectionState newState) {
     state = newState;
@@ -69,8 +67,6 @@ class MqttService {
   late MqttServerClient _client;
   final StreamController<MqttMessageData> _messageStreamController =
       StreamController<MqttMessageData>.broadcast();
-  final StreamController<MqttConnectionState> _connectionStreamController =
-      StreamController<MqttConnectionState>.broadcast();
 
   // 配置参数
   String _broker = 'broker.emqx.io'; // 免费的公共 MQTT 代理
@@ -85,8 +81,8 @@ class MqttService {
 
   // 流
   Stream<MqttMessageData> get messageStream => _messageStreamController.stream;
-  Stream<MqttConnectionState> get connectionStream =>
-      _connectionStreamController.stream;
+  ValueNotifier<MqttConnectionState> get connectionState =>
+      ValueNotifier(MqttConnectionState.disconnected);
 
   // 初始化 MQTT 客户端
   Future<void> initialize({
@@ -139,12 +135,12 @@ class MqttService {
   // 连接到 MQTT 代理
   Future<bool> connect() async {
     try {
-      _connectionStreamController.add(MqttConnectionState.connecting);
+      connectionState.value = MqttConnectionState.connecting;
 
       final status = await _client.connect();
 
       if (status?.state == MqttConnectionState.connected) {
-        _connectionStreamController.add(MqttConnectionState.connected);
+        connectionState.value = MqttConnectionState.connected;
 
         // 监听消息
         _client.updates?.listen(_onMessage);
@@ -157,12 +153,12 @@ class MqttService {
 
         return true;
       } else {
-        _connectionStreamController.add(MqttConnectionState.faulted);
+        connectionState.value = MqttConnectionState.faulted;
         return false;
       }
     } catch (e) {
       debugPrint('MQTT 连接失败: $e');
-      _connectionStreamController.add(MqttConnectionState.faulted);
+      connectionState.value = MqttConnectionState.faulted;
       return false;
     }
   }
@@ -170,7 +166,7 @@ class MqttService {
   // 断开连接
   Future<void> disconnect() async {
     try {
-      _connectionStreamController.add(MqttConnectionState.disconnecting);
+      connectionState.value = MqttConnectionState.disconnecting;
 
       // 发布用户离线状态
       await _publishUserStatus('offline');
@@ -311,12 +307,12 @@ class MqttService {
   // 连接回调
   void _onConnected() {
     debugPrint('MQTT 连接成功');
-    _connectionStreamController.add(MqttConnectionState.connected);
+    connectionState.value = MqttConnectionState.connected;
   }
 
   void _onDisconnected() {
     debugPrint('MQTT 连接断开');
-    _connectionStreamController.add(MqttConnectionState.disconnected);
+    connectionState.value = MqttConnectionState.disconnected;
   }
 
   void _onSubscribed(String topic) {
@@ -333,18 +329,23 @@ class MqttService {
 
   void _onAutoReconnect() {
     debugPrint('MQTT 自动重连中...');
-    _connectionStreamController.add(MqttConnectionState.connecting);
+    connectionState.value = MqttConnectionState.connecting;
   }
 
   void _onAutoReconnected() {
     debugPrint('MQTT 自动重连成功');
-    _connectionStreamController.add(MqttConnectionState.connected);
+    connectionState.value = MqttConnectionState.connected;
   }
 
   // 销毁资源
   void dispose() {
+    try {
+      // 先断开连接（会发送离线状态）
+      disconnect();
+    } catch (e) {
+      debugPrint('销毁资源时断开连接失败: $e');
+    }
+
     _messageStreamController.close();
-    _connectionStreamController.close();
-    _client.disconnect();
   }
 }

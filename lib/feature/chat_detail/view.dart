@@ -1,4 +1,3 @@
-import 'package:chat_demo/common/providers/chat_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,9 +29,11 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final stateNotifier = ref.watch(chatDetailVMProvider.notifier);
-    final state = ref.watch(chatDetailVMProvider);
-    final chatList = ref.watch(chatListProvider(widget.userId));
+    final stateNotifier = ref.read(
+      chatDetailVMProvider(widget.userId).notifier,
+    );
+    final state = ref.watch(chatDetailVMProvider(widget.userId));
+    final chatList = state.messages;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: commonAppbar(
@@ -66,18 +67,19 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                   final model = chatList[index];
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: ChatItemWidget(myId: 2, model: model),
+                    child: ChatItemWidget(myId: widget.userId, model: model),
                   );
                 },
               ),
             ),
             ChatBottomBar(
+              chatId: widget.userId,
               hasFocus: stateNotifier.hasFocus,
               onSubmit: (value) {
-                stateNotifier.send(widget.userId, value);
+                stateNotifier.sendMessage(value);
               },
               keyboardFrameChange: () {
-                stateNotifier.link(false, false);
+                stateNotifier.scrollToBottom(false, false);
               },
             ),
           ],
@@ -88,7 +90,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
 
   void _unfocus() {
     ref
-        .read(chatBottomBarControllerProvider.notifier)
+        .read(chatBottomBarControllerProvider(widget.userId).notifier)
         .setType(ChatBottomBarInputType.normal);
     cancelKeyBoard();
   }

@@ -21,4 +21,14 @@ class DataBaseService extends _$DataBaseService {
   Future<void> deleteUserList() async {
     await state.delete(state.userTableInfo).go();
   }
+
+  Future<void> insertOrUpdateMessage(MessageTableCompanion message) async {
+    await state.into(state.messageTable).insertOnConflictUpdate(message);
+  }
+
+  Future<List<MessageTableData>> getMessages() async {
+    final data = await state.select(state.messageTable).get();
+    data.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return data;
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:chat_demo/common/common.dart';
+import 'package:chat_demo/common/data_base/database.dart';
 import 'package:chat_demo/common/mqtt/chat_manager.dart';
+import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:chat_demo/common/mqtt/mqtt_service.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -59,7 +61,9 @@ class ChatDetailVM extends _$ChatDetailVM {
   }
 
   void _loadMessages() {
+    print('cachedMessages =1');
     final cachedMessages = _chatManager.getCachedMessages(chatId);
+    print('cachedMessages = ${cachedMessages.length}');
     if (cachedMessages.isEmpty) {
       return;
     }
@@ -70,16 +74,14 @@ class ChatDetailVM extends _$ChatDetailVM {
 
   // 监听新消息并更新状态
   void _listenToMessages() {
-    final userId = ref.read(userInfoNotifierProvider)!.id;
     final subscription = ref
         .read(mqttServiceNotifierProvider)
         .messageStream
         .listen(
           (messageData) {
-            llPrint('messageData.topic: ${messageData.topic}');
-            llPrint('chatId: $userId');
-            if (messageData.topic.contains(userId)) {
-              llPrint('messageData.topic');
+            print('cachedMessages =2 ${messageData.chatId}');
+            if (messageData.chatId == chatId) {
+              print('cachedMessages =3');
               _loadMessages();
               scrollToBottom(true, true);
             }
@@ -119,6 +121,6 @@ class ChatDetailVM extends _$ChatDetailVM {
 abstract class ChatDetailState with _$ChatDetailState {
   const factory ChatDetailState({
     @Default(true) bool canScroll,
-    @Default([]) List<ChatMessage> messages,
+    @Default([]) List<MessageInfo> messages,
   }) = _ChatDetailState;
 }

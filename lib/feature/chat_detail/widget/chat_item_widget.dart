@@ -1,11 +1,11 @@
+import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chat_demo/common/color.dart';
 import 'package:chat_demo/common/widget/chat_bubble.dart';
-import 'package:chat_demo/common/mqtt/chat_manager.dart';
 
 class ChatItemWidget extends StatelessWidget {
-  final ChatMessage model;
+  final MessageInfo model;
   final String userId;
 
   const ChatItemWidget({required this.model, required this.userId, super.key});

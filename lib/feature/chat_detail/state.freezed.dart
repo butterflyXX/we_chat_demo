@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatDetailState {
 
- bool get canScroll; List<ChatMessage> get messages;
+ bool get canScroll; List<MessageInfo> get messages;
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,7 +46,7 @@ abstract mixin class $ChatDetailStateCopyWith<$Res>  {
   factory $ChatDetailStateCopyWith(ChatDetailState value, $Res Function(ChatDetailState) _then) = _$ChatDetailStateCopyWithImpl;
 @useResult
 $Res call({
- bool canScroll, List<ChatMessage> messages
+ bool canScroll, List<MessageInfo> messages
 });
 
 
@@ -67,7 +67,7 @@ class _$ChatDetailStateCopyWithImpl<$Res>
   return _then(_self.copyWith(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
 as bool,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,
+as List<MessageInfo>,
   ));
 }
 
@@ -78,12 +78,12 @@ as List<ChatMessage>,
 
 
 class _ChatDetailState implements ChatDetailState {
-  const _ChatDetailState({this.canScroll = true, final  List<ChatMessage> messages = const []}): _messages = messages;
+  const _ChatDetailState({this.canScroll = true, final  List<MessageInfo> messages = const []}): _messages = messages;
   
 
 @override@JsonKey() final  bool canScroll;
- final  List<ChatMessage> _messages;
-@override@JsonKey() List<ChatMessage> get messages {
+ final  List<MessageInfo> _messages;
+@override@JsonKey() List<MessageInfo> get messages {
   if (_messages is EqualUnmodifiableListView) return _messages;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_messages);
@@ -120,7 +120,7 @@ abstract mixin class _$ChatDetailStateCopyWith<$Res> implements $ChatDetailState
   factory _$ChatDetailStateCopyWith(_ChatDetailState value, $Res Function(_ChatDetailState) _then) = __$ChatDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool canScroll, List<ChatMessage> messages
+ bool canScroll, List<MessageInfo> messages
 });
 
 
@@ -141,7 +141,7 @@ class __$ChatDetailStateCopyWithImpl<$Res>
   return _then(_ChatDetailState(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
 as bool,messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,
+as List<MessageInfo>,
   ));
 }
 

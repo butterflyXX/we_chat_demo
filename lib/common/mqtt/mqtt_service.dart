@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'mqtt_service.g.dart';
 
@@ -26,39 +28,6 @@ class MqttConnectionNotifier extends _$MqttConnectionNotifier {
 
   void setConnectionState(MqttConnectionState newState) {
     state = newState;
-  }
-}
-
-// MQTT 消息数据类
-class MqttMessageData {
-  final String topic;
-  final String payload;
-  final DateTime timestamp;
-  final String messageId;
-
-  MqttMessageData({
-    required this.topic,
-    required this.payload,
-    required this.timestamp,
-    required this.messageId,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'topic': topic,
-      'payload': payload,
-      'timestamp': timestamp.toIso8601String(),
-      'messageId': messageId,
-    };
-  }
-
-  factory MqttMessageData.fromJson(Map<String, dynamic> json) {
-    return MqttMessageData(
-      topic: json['topic'],
-      payload: json['payload'],
-      timestamp: DateTime.parse(json['timestamp']),
-      messageId: json['messageId'],
-    );
   }
 }
 
@@ -182,34 +151,28 @@ class MqttService {
     required String receiverId,
     required String content,
     required String messageType,
-    String? roomId,
-    Map<String, dynamic>? extra,
   }) async {
     if (_client.connectionStatus?.state != MqttConnectionState.connected) {
       throw Exception('MQTT 未连接');
     }
 
-    final messageId = 'msg_${DateTime.now().millisecondsSinceEpoch}';
     final message = {
-      'id': messageId,
+      'messageId': Uuid().v4(),
       'senderId': _currentUserId,
       'receiverId': receiverId,
       'content': content,
-      'messageType': messageType,
-      'timestamp': DateTime.now().toIso8601String(),
-      'roomId': roomId,
-      'extra': extra ?? {},
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
 
-    final topic = roomId != null
-        ? '$_topicPrefix/room/$roomId/messages'
-        : '$_topicPrefix/user/$receiverId/messages';
+    final topic = '$_topicPrefix/user/$receiverId/messages';
 
     final builder = MqttClientPayloadBuilder();
 
     builder.addUTF8String(jsonEncode(message));
 
     _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+
+    _cacheMessage(receiverId, MessageInfo.fromJson(message));
   }
 
   // 订阅聊天室
@@ -289,20 +252,22 @@ class MqttService {
   // 消息处理
   void _onMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
     for (final message in messages) {
-      final topic = message.topic;
       final payload = MqttPublishPayload.bytesToStringAsString(
         (message.payload as MqttPublishMessage).payload.message,
       );
 
-      final messageData = MqttMessageData(
-        topic: topic,
-        payload: payload,
-        timestamp: DateTime.now(),
-        messageId: 'received_${DateTime.now().millisecondsSinceEpoch}',
-      );
+      final messageInfo = MessageInfo.fromJson(jsonDecode(payload));
 
-      _messageStreamController.add(messageData);
+      _cacheMessage(messageInfo.senderId, MessageInfo.fromJson(jsonDecode(payload)));
     }
+  }
+
+  void _cacheMessage(String chatId, MessageInfo message) {
+    final messageData = MqttMessageData(
+      chatId: chatId,
+      messageInfo: message,
+    );
+    _messageStreamController.add(messageData);
   }
 
   // 连接回调

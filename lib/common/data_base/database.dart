@@ -11,7 +11,17 @@ class UserTableInfo extends Table {
   DateTimeColumn get createdAt => dateTime()();
 }
 
-@DriftDatabase(tables: [UserTableInfo])
+class MessageTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get messageId => text()();
+  TextColumn get senderId => text()();
+  TextColumn get receiverId => text()();
+  TextColumn get content => text()();
+  TextColumn get messageType => text()();
+  DateTimeColumn get timestamp => dateTime()();
+}
+
+@DriftDatabase(tables: [UserTableInfo, MessageTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
   @override

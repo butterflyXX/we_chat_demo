@@ -44,26 +44,6 @@ class _LoginPageState extends State<LoginPage> {
                   ref
                       .read(userInfoNotifierProvider.notifier)
                       .setUserInfo(userInfo);
-
-                  // 初始化 ChatManager
-                  try {
-                    final chatManager = ref.read(chatManagerProvider);
-                    await chatManager.initialize(
-                      userId: userInfo.id,
-                      userName: userInfo.name,
-                      userAvatar: '', // 当前没有头像信息
-                      broker: MqttConfig.defaultBroker,
-                      port: MqttConfig.defaultPort,
-                      username: MqttConfig.defaultUsername,
-                      password: MqttConfig.defaultPassword,
-                    );
-
-                    // 连接到 MQTT 服务器
-                    await chatManager.connect();
-                  } catch (e) {
-                    llPrint('MQTT 连接失败: $e');
-                  }
-
                   // 跳转到主页
                   router.go(HomeRoute().location);
                 },

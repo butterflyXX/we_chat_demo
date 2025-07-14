@@ -18,7 +18,7 @@ Map<String, dynamic> _$UserInfoToJson(_UserInfo instance) => <String, dynamic>{
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userInfoNotifierHash() => r'a629822047e0282433b78262964bbcc18f9ad891';
+String _$userInfoNotifierHash() => r'e5bcadef34d1574044effd5e6df4f4e3c7fc1356';
 
 /// See also [UserInfoNotifier].
 @ProviderFor(UserInfoNotifier)

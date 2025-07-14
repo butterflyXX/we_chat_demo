@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:chat_demo/common/common.dart';
+import 'package:chat_demo/common/config/mqtt_config.dart';
 import 'package:chat_demo/common/kv_manager/kv_manager.dart';
+import 'package:chat_demo/common/mqtt/chat_manager.dart';
 import 'package:chat_demo/service_manager.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,12 +24,17 @@ abstract class UserInfo with _$UserInfo {
 class UserInfoNotifier extends _$UserInfoNotifier {
   @override
   UserInfo? build() {
-    return getCacheUserInfo();
+    final userInfo = getCacheUserInfo();
+    if (userInfo != null) {
+      _connectSocket(userInfo);
+    }
+    return userInfo;
   }
 
   void setUserInfo(UserInfo? userInfo) {
     state = userInfo;
     setCacheUserInfo();
+    _connectSocket(userInfo);
   }
 
   UserInfo? getCacheUserInfo() {
@@ -53,5 +60,30 @@ class UserInfoNotifier extends _$UserInfoNotifier {
       }
     }
     return serviceLocator<KvManagerBase>().set(KvKey.userInfo, value: infoString);
+  }
+
+  Future _connectSocket(UserInfo? userInfo) async {
+    final chatManager = ref.read(chatManagerProvider);
+    chatManager.disconnect();
+    // 初始化 ChatManager
+    if (userInfo == null) return;
+
+    try {
+
+      await chatManager.initialize(
+        userId: userInfo.id,
+        userName: userInfo.name,
+        userAvatar: '', // 当前没有头像信息
+        broker: MqttConfig.defaultBroker,
+        port: MqttConfig.defaultPort,
+        username: MqttConfig.defaultUsername,
+        password: MqttConfig.defaultPassword,
+      );
+
+      // 连接到 MQTT 服务器
+      await chatManager.connect();
+    } catch (e) {
+      llPrint('MQTT 连接失败: $e');
+    }
   }
 }

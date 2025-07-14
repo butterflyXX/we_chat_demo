@@ -206,7 +206,8 @@ class MqttService {
         : '$_topicPrefix/user/$receiverId/messages';
 
     final builder = MqttClientPayloadBuilder();
-    builder.addString(jsonEncode(message));
+
+    builder.addUTF8String(jsonEncode(message));
 
     _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }

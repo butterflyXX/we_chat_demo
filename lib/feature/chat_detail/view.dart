@@ -21,9 +21,6 @@ class ChatDetailPage extends ConsumerStatefulWidget {
 class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
   @override
   void initState() {
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   ref.read(chatDetailVMProvider(widget.userId).notifier).link();
-    // });
     super.initState();
   }
 
@@ -67,7 +64,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                   final model = chatList[index];
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: ChatItemWidget(myId: widget.userId, model: model),
+                    child: ChatItemWidget(userId: widget.userId, model: model),
                   );
                 },
               ),

@@ -6,9 +6,9 @@ import 'package:chat_demo/common/mqtt/chat_manager.dart';
 
 class ChatItemWidget extends StatelessWidget {
   final ChatMessage model;
-  final String myId;
+  final String userId;
 
-  const ChatItemWidget({required this.model, required this.myId, super.key});
+  const ChatItemWidget({required this.model, required this.userId, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ChatItemWidget extends StatelessWidget {
 
         List<Widget> children = [icon, padding, Expanded(child: text)];
 
-        if (isMe()) {
+        if (!isUser()) {
           children = [Expanded(child: text), padding, icon];
         }
         return Row(
@@ -44,14 +44,14 @@ class ChatItemWidget extends StatelessWidget {
       width: 36.w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        color: isMe() ? Colors.blueAccent : Colors.orangeAccent,
+        color: isUser() ? Colors.orangeAccent : Colors.blueAccent,
       ),
     );
   }
 
   Widget textWidget(double maxWidth) {
     return Row(
-      mainAxisAlignment: isMe()
+      mainAxisAlignment: !isUser()
           ? MainAxisAlignment.end
           : MainAxisAlignment.start,
       children: [
@@ -59,16 +59,16 @@ class ChatItemWidget extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: ChatBubble(
             text: model.content,
-            inLeft: !isMe(),
-            textBackColor: isMe() ? selectedTabBarItemColor : Colors.white,
+            inLeft: isUser(),
+            textBackColor: isUser() ? Colors.white : selectedTabBarItemColor,
           ),
         ),
       ],
     );
   }
 
-  bool isMe() {
-    return myId == model.senderId;
+  bool isUser() {
+    return userId == model.senderId;
   }
 
   // String _formatTime(DateTime time) {

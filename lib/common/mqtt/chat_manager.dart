@@ -178,7 +178,6 @@ class ChatManager {
 
   // 清理资源
   void dispose() {
-    _messageSubscription.cancel();
     _mqttService.dispose();
     _messageCache.clear();
   }

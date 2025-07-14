@@ -345,7 +345,5 @@ class MqttService {
     } catch (e) {
       debugPrint('销毁资源时断开连接失败: $e');
     }
-
-    _messageStreamController.close();
   }
 }

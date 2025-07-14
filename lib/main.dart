@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/services/app_lifecycle_service.dart';
+import 'package:chat_demo/service_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:chat_demo/route/route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await registerServers();
   runApp(ProviderScope(child: const MyApp()));
 }
 

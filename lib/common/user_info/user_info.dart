@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/config/mqtt_config.dart';
+import 'package:chat_demo/common/extension/util_extension.dart';
 import 'package:chat_demo/common/kv_manager/kv_manager.dart';
 import 'package:chat_demo/common/mqtt/chat_manager.dart';
 import 'package:chat_demo/service_manager.dart';
@@ -26,7 +27,9 @@ class UserInfoNotifier extends _$UserInfoNotifier {
   UserInfo? build() {
     final userInfo = getCacheUserInfo();
     if (userInfo != null) {
-      _connectSocket(userInfo);
+      Future(() {
+        _connectSocket();
+      });
     }
     return userInfo;
   }
@@ -34,7 +37,7 @@ class UserInfoNotifier extends _$UserInfoNotifier {
   void setUserInfo(UserInfo? userInfo) {
     state = userInfo;
     setCacheUserInfo();
-    _connectSocket(userInfo);
+    _connectSocket();
   }
 
   UserInfo? getCacheUserInfo() {
@@ -62,28 +65,27 @@ class UserInfoNotifier extends _$UserInfoNotifier {
     return serviceLocator<KvManagerBase>().set(KvKey.userInfo, value: infoString);
   }
 
-  Future _connectSocket(UserInfo? userInfo) async {
+  Future _connectSocket() async {
     final chatManager = ref.read(chatManagerProvider.notifier);
-    chatManager.disconnect();
+    await chatManager.disconnect();
     // 初始化 ChatManager
-    if (userInfo == null) return;
+    state?.let((it) async {
+      try {
+        await chatManager.initialize(
+          userId: it.id,
+          userName: it.name,
+          userAvatar: '', // 当前没有头像信息
+          broker: MqttConfig.defaultBroker,
+          port: MqttConfig.defaultPort,
+          username: MqttConfig.defaultUsername,
+          password: MqttConfig.defaultPassword,
+        );
 
-    try {
-
-      await chatManager.initialize(
-        userId: userInfo.id,
-        userName: userInfo.name,
-        userAvatar: '', // 当前没有头像信息
-        broker: MqttConfig.defaultBroker,
-        port: MqttConfig.defaultPort,
-        username: MqttConfig.defaultUsername,
-        password: MqttConfig.defaultPassword,
-      );
-
-      // 连接到 MQTT 服务器
-      await chatManager.connect();
-    } catch (e) {
-      llPrint('MQTT 连接失败: $e');
-    }
+        // 连接到 MQTT 服务器
+        await chatManager.connect();
+      } catch (e) {
+        llPrint('MQTT 连接失败: $e');
+      }
+    });
   }
 }

@@ -61,9 +61,7 @@ class ChatDetailVM extends _$ChatDetailVM {
   }
 
   void _loadMessages() {
-    print('cachedMessages =1');
     final cachedMessages = _chatManager.getCachedMessages(chatId);
-    print('cachedMessages = ${cachedMessages.length}');
     if (cachedMessages.isEmpty) {
       return;
     }
@@ -79,9 +77,7 @@ class ChatDetailVM extends _$ChatDetailVM {
         .messageStream
         .listen(
           (messageData) {
-            print('cachedMessages =2 ${messageData.chatId}');
             if (messageData.chatId == chatId) {
-              print('cachedMessages =3');
               _loadMessages();
               scrollToBottom(true, true);
             }

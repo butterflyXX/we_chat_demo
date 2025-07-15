@@ -35,7 +35,7 @@ class ChatManager extends _$ChatManager {
     String? password,
   }) async {
     _currentUserId = userId;
-
+    initCacheFromDb();
     await _mqttService.initialize(
       userId: userId,
       broker: broker,

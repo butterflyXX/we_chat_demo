@@ -22,7 +22,7 @@ class TabBarItem {
   });
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 class HomeBarState extends _$HomeBarState {
   PageController controller = PageController();
   List<TabBarItem> tabBars = [];

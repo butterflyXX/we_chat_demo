@@ -10,10 +10,14 @@ part 'user_list.g.dart';
 class UserList extends _$UserList {
   @override
   Future<List<UserTableInfoData>> build() async {
+    ref.watch(userInfoNotifierProvider);
     return await loadData();
   }
 
   Future<List<UserTableInfoData>> loadData() async {
+    if (ref.read(userInfoNotifierProvider) == null) {
+      return [];
+    }
     return await ref.read(dataBaseServiceProvider.notifier).getUsers();
   }
 

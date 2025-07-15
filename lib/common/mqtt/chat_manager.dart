@@ -1,35 +1,27 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:chat_demo/common/common.dart';
-import 'package:chat_demo/common/data_base/database.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
+import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'mqtt_service.dart';
+import 'package:chat_demo/common/data_base/data_base_service.dart';
+import 'package:chat_demo/common/data_base/database.dart';
+
+part 'chat_manager.g.dart';
 
 // 聊天管理器提供者
-final chatManagerProvider = Provider<ChatManager>((ref) {
-  return ChatManager(ref);
-});
-
-// 聊天管理器
-class ChatManager {
-  final Ref ref;
-  late final MqttService _mqttService;
-  late StreamSubscription _messageSubscription;
-
+@Riverpod(keepAlive: true)
+class ChatManager extends _$ChatManager {
+  late final _mqttService = ref.read(mqttServiceNotifierProvider);
   final Map<String, List<MessageInfo>> _messageCache = {};
   String _currentUserId = '';
 
-  ChatManager(this.ref) {
-    _mqttService = ref.read(mqttServiceNotifierProvider);
-    _initialize();
-  }
+  late final _dbService = ref.read(dataBaseServiceProvider.notifier);
 
-  void _initialize() {
-    _messageSubscription = _mqttService.messageStream.listen(
-      _handleMqttMessage,
-    );
+  @override
+  int build() {
+    _mqttService.messageStream.listen(_handleMqttMessage);
+    return 0;
   }
 
   // 初始化聊天管理器
@@ -71,6 +63,32 @@ class ChatManager {
     );
   }
 
+  // 从数据库初始化消息缓存
+  Future<void> initCacheFromDb() async {
+    final dbMessages = await _dbService.getMessages();
+    _messageCache.clear();
+    for (final msg in dbMessages) {
+      // 组装 MessageInfo
+      final messageInfo = MessageInfo(
+        messageId: msg.messageId,
+        senderId: msg.senderId,
+        receiverId: msg.receiverId,
+        content: msg.content,
+        timestamp: msg.timestamp,
+      );
+      // 确定聊天ID
+      String chatId = messageInfo.senderId == _currentUserId
+          ? messageInfo.receiverId
+          : messageInfo.senderId;
+      _messageCache.putIfAbsent(chatId, () => []);
+      _messageCache[chatId]!.add(messageInfo);
+    }
+    // 按时间排序
+    for (final list in _messageCache.values) {
+      list.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    }
+  }
+
   // 处理 MQTT 消息
   void _handleMqttMessage(MqttMessageData messageData) {
     try {
@@ -96,6 +114,18 @@ class ChatManager {
 
     // 按时间排序
     _messageCache[chatId]!.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    _dbService.insertOrUpdateMessage(
+      MessageTableCompanion.insert(
+        loginUserId: ref.read(userInfoNotifierProvider)!.id,
+        messageId: message.messageId,
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        content: message.content,
+        messageType: 'text',
+        timestamp: message.timestamp,
+      ),
+    );
   }
 
   // 获取缓存的消息
@@ -110,7 +140,6 @@ class ChatManager {
 
   // 清理资源
   void dispose() {
-    _mqttService.dispose();
     _messageCache.clear();
   }
 }

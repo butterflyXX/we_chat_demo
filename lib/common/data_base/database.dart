@@ -6,6 +6,7 @@ part 'database.g.dart';
 
 class UserTableInfo extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get loginUserId => text()();
   TextColumn get userId => text()();
   TextColumn get name => text().withLength(min: 1, max: 32)();
   DateTimeColumn get createdAt => dateTime()();
@@ -13,12 +14,13 @@ class UserTableInfo extends Table {
 
 class MessageTable extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get loginUserId => text()();
   TextColumn get messageId => text()();
   TextColumn get senderId => text()();
   TextColumn get receiverId => text()();
   TextColumn get content => text()();
   TextColumn get messageType => text()();
-  DateTimeColumn get timestamp => dateTime()();
+  IntColumn get timestamp => integer()();
 }
 
 @DriftDatabase(tables: [UserTableInfo, MessageTable])

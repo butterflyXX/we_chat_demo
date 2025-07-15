@@ -63,7 +63,7 @@ class UserInfoNotifier extends _$UserInfoNotifier {
   }
 
   Future _connectSocket(UserInfo? userInfo) async {
-    final chatManager = ref.read(chatManagerProvider);
+    final chatManager = ref.read(chatManagerProvider.notifier);
     chatManager.disconnect();
     // 初始化 ChatManager
     if (userInfo == null) return;

@@ -15,7 +15,7 @@ part 'state.freezed.dart';
 @riverpod
 class ChatDetailVM extends _$ChatDetailVM {
   final ScrollController controller = ScrollController();
-  late final _chatManager = ref.read(chatManagerProvider);
+  late final _chatManager = ref.read(chatManagerProvider.notifier);
 
   @override
   ChatDetailState build(String chatId) {

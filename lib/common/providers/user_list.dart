@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/data_base/data_base_service.dart';
 import 'package:chat_demo/common/data_base/database.dart';
+import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -21,6 +22,7 @@ class UserList extends _$UserList {
         .read(dataBaseServiceProvider.notifier)
         .insertOrUpdateUser(
           UserTableInfoCompanion(
+            loginUserId: Value(ref.read(userInfoNotifierProvider)!.id),
             name: Value(name),
             userId: Value(id),
             createdAt: Value(DateTime.now()),

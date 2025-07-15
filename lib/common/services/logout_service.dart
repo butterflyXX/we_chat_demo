@@ -21,7 +21,7 @@ class LogoutService {
       debugPrint('开始退出登录...');
 
       // 1. 断开MQTT连接（会自动发送离线状态）
-      final chatManager = ref.read(chatManagerProvider);
+      final chatManager = ref.read(chatManagerProvider.notifier);
       await chatManager.disconnect();
       debugPrint('MQTT连接已断开');
 
@@ -58,7 +58,7 @@ class LogoutService {
       ref.read(userInfoNotifierProvider.notifier).setUserInfo(null);
 
       // 尝试断开MQTT连接，但不等待
-      final chatManager = ref.read(chatManagerProvider);
+      final chatManager = ref.read(chatManagerProvider.notifier);
       chatManager.disconnect().catchError((e) {
         debugPrint('强制退出时断开MQTT连接失败: $e');
       });

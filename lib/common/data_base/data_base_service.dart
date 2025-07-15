@@ -1,9 +1,10 @@
 import 'package:chat_demo/common/data_base/database.dart';
+import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'data_base_service.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class DataBaseService extends _$DataBaseService {
   @override
   AppDatabase build() => AppDatabase();
@@ -13,7 +14,8 @@ class DataBaseService extends _$DataBaseService {
   }
 
   Future<List<UserTableInfoData>> getUsers() async {
-    final data = await state.select(state.userTableInfo).get();
+    final table = state.select(state.userTableInfo)..where((item) => item.loginUserId.equals(ref.read(userInfoNotifierProvider)!.id));
+    final data = await table.get();
     data.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return data;
   }
@@ -27,7 +29,8 @@ class DataBaseService extends _$DataBaseService {
   }
 
   Future<List<MessageTableData>> getMessages() async {
-    final data = await state.select(state.messageTable).get();
+    final table = state.select(state.messageTable)..where((item) => item.loginUserId.equals(ref.read(userInfoNotifierProvider)!.id));
+    final data = await table.get();
     data.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return data;
   }

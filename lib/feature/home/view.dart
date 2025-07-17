@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
+import 'package:chat_demo/common/widget/sliver/header_sliver.dart';
 import 'package:chat_demo/feature/home/state.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:flutter/material.dart';
@@ -36,27 +37,11 @@ class _HomeState extends ConsumerState<Home>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: commonAppbar(
-        context,
-        title: Home.title,
-        actions: [
-          CommonIconButton(
-            onTap: () {
-              NavigatorManager.push(AddUserRoute());
-            },
-            child: const Icon(Icons.add_circle_outline),
-          ),
-        ],
-        leading: CommonIconButton(
-          onTap: () {
-            ref.read(userListProvider.notifier).deleteUserList();
-          },
-          child: const Icon(Icons.more_horiz),
-        ),
-      ),
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
+          SliverToBoxAdapter(child: SizedBox.shrink()),
+          _headerWidget(context),
           SliverToBoxAdapter(
             child: Container(
               height: 46,
@@ -68,30 +53,58 @@ class _HomeState extends ConsumerState<Home>
           ref
               .watch(userListProvider)
               .when(
-                data: (data) => SliverList.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) => GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      ref
-                          .read(homeProvider.notifier)
-                          .gotoChatDetail(data[index]);
-                    },
-                    child: HomeItemWidget(model: data[index]),
-                  ),
-                ),
-                error: (error, stackTrace) => SliverToBoxAdapter(),
-                loading: () => const SliverToBoxAdapter(),
+            data: (data) => SliverList.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) => GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  ref
+                      .read(homeProvider.notifier)
+                      .gotoChatDetail(data[index]);
+                },
+                child: HomeItemWidget(model: data[index]),
               ),
+            ),
+            error: (error, stackTrace) => SliverToBoxAdapter(),
+            loading: () => const SliverToBoxAdapter(),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final Directory tempDir = await getLibraryDirectory();
-          for (final file in tempDir.listSync()) {
-            llPrint(file);
-          }
-        },
+    );
+  }
+
+  Widget _headerWidget(BuildContext context) {
+    return SliverHeaderWidget(
+      minHeight: ScreenUtil().statusBarHeight + 44,
+      maxHeight: ScreenUtil().statusBarHeight + 44,
+      child: Container(
+        color: commonAppBarBackColor,
+        child: Column(
+          children: [
+            SizedBox(height: ScreenUtil().statusBarHeight,),
+            Expanded(
+              child: Row(
+                children: [
+                  CommonIconButton(
+                    onTap: () {
+                      ref.read(userListProvider.notifier).deleteUserList();
+                    },
+                    child: const Icon(Icons.more_horiz),
+                  ),
+                  Expanded(
+                    child: Text(Home.title),
+                  ),
+                  CommonIconButton(
+                    onTap: () {
+                      NavigatorManager.push(AddUserRoute());
+                    },
+                    child: const Icon(Icons.add_circle_outline),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

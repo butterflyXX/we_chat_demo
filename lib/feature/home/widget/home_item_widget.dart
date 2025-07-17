@@ -12,7 +12,7 @@ class HomeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-      model.createdAt.millisecondsSinceEpoch,
+      model.createdAt,
     );
     return SizedBox(
       height: 72.w,
@@ -48,7 +48,7 @@ class HomeItemWidget extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    model.name,
+                    model.lastMessage ?? '',
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: homeSearchTintColor,

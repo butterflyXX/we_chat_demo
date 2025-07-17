@@ -6,7 +6,7 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$homeBarStateHash() => r'2fa4f950c53955b77640a733098cd19e0ad43f53';
+String _$homeBarStateHash() => r'f874a19fdbefd49bd81acd088ff0ab8ab8d782f9';
 
 /// See also [HomeBarState].
 @ProviderFor(HomeBarState)

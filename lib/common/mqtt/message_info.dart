@@ -6,6 +6,7 @@ part 'message_info.freezed.dart';
 
 @freezed
 abstract class MessageInfo with _$MessageInfo {
+  const MessageInfo._();
   const factory MessageInfo({
     required String messageId,
     required String senderId,
@@ -16,8 +17,12 @@ abstract class MessageInfo with _$MessageInfo {
 
   factory MessageInfo.fromJson(Map<String, dynamic> json) =>
       _$MessageInfoFromJson(json);
-}
 
+  // 就是聊天对方的用户id
+  String getChatId(String loginUserId) {
+    return senderId == loginUserId ? receiverId : senderId;
+  }
+}
 
 @freezed
 abstract class MqttMessageData with _$MqttMessageData {

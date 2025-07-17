@@ -29,7 +29,7 @@ class UserList extends _$UserList {
             loginUserId: Value(ref.read(userInfoNotifierProvider)!.id),
             name: Value(name),
             userId: Value(id),
-            createdAt: Value(DateTime.now()),
+            createdAt: Value(DateTime.now().millisecondsSinceEpoch),
           ),
         );
     reloadData();

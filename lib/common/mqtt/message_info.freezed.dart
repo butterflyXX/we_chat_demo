@@ -83,8 +83,8 @@ as int,
 /// @nodoc
 @JsonSerializable()
 
-class _MessageInfo implements MessageInfo {
-  const _MessageInfo({required this.messageId, required this.senderId, required this.receiverId, required this.content, required this.timestamp});
+class _MessageInfo extends MessageInfo {
+  const _MessageInfo({required this.messageId, required this.senderId, required this.receiverId, required this.content, required this.timestamp}): super._();
   factory _MessageInfo.fromJson(Map<String, dynamic> json) => _$MessageInfoFromJson(json);
 
 @override final  String messageId;

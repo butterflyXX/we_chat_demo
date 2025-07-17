@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/data_base/database.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'data_base_service.g.dart';
@@ -11,6 +12,11 @@ class DataBaseService extends _$DataBaseService {
 
   Future<void> insertOrUpdateUser(UserTableInfoCompanion user) async {
     await state.into(state.userTableInfo).insertOnConflictUpdate(user);
+  }
+
+  Future<void> updateUser(String userId, {required ValueGetter<UserTableInfoCompanion> onGetChangeValue}) async {
+    final table = state.update(state.userTableInfo)..where((item) => item.userId.equals(userId));
+    table.write(onGetChangeValue());
   }
 
   Future<List<UserTableInfoData>> getUsers() async {

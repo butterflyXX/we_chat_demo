@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:chat_demo/common/mqtt/message_info.dart';
+import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'mqtt_service.dart';
@@ -14,7 +16,6 @@ part 'chat_manager.g.dart';
 class ChatManager extends _$ChatManager {
   late final _mqttService = ref.read(mqttServiceNotifierProvider);
   final Map<String, List<MessageInfo>> _messageCache = {};
-  String _currentUserId = '';
 
   late final _dbService = ref.read(dataBaseServiceProvider.notifier);
 
@@ -34,7 +35,6 @@ class ChatManager extends _$ChatManager {
     String? username,
     String? password,
   }) async {
-    _currentUserId = userId;
     initCacheFromDb();
     await _mqttService.initialize(
       userId: userId,
@@ -77,9 +77,7 @@ class ChatManager extends _$ChatManager {
         timestamp: msg.timestamp,
       );
       // 确定聊天ID
-      String chatId = messageInfo.senderId == _currentUserId
-          ? messageInfo.receiverId
-          : messageInfo.senderId;
+      String chatId = _chatId(messageInfo);
       _messageCache.putIfAbsent(chatId, () => []);
       _messageCache[chatId]!.add(messageInfo);
     }
@@ -102,9 +100,7 @@ class ChatManager extends _$ChatManager {
   void _handleChatMessage(MessageInfo message) {
 
     // 确定聊天 ID
-    String chatId = message.senderId == _currentUserId
-        ? message.receiverId
-        : message.senderId;
+    String chatId = _chatId(message);
 
     if (!_messageCache.containsKey(chatId)) {
       _messageCache[chatId] = [];
@@ -115,6 +111,13 @@ class ChatManager extends _$ChatManager {
     // 按时间排序
     _messageCache[chatId]!.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
+    _insertMessage(message);
+
+    _updateUserInfo(message);
+    
+  }
+
+  void _insertMessage(MessageInfo message) {
     _dbService.insertOrUpdateMessage(
       MessageTableCompanion.insert(
         loginUserId: ref.read(userInfoNotifierProvider)!.id,
@@ -128,6 +131,18 @@ class ChatManager extends _$ChatManager {
     );
   }
 
+  // 更新当前用户的 lastMessage 字段
+  void _updateUserInfo(MessageInfo message) async {
+    await _dbService.updateUser(_chatId(message), onGetChangeValue: () {
+      return UserTableInfoCompanion(
+        createdAt: Value(message.timestamp),
+        lastMessage: Value(message.content),
+      );
+    });
+
+    ref.read(userListProvider.notifier).reloadData();
+  }
+
   // 获取缓存的消息
   List<MessageInfo> getCachedMessages(String chatId) {
     return _messageCache[chatId] ?? [];
@@ -136,6 +151,11 @@ class ChatManager extends _$ChatManager {
   // 断开MQTT连接
   Future<void> disconnect() async {
     await _mqttService.disconnect();
+  }
+
+  String _chatId(MessageInfo message) {
+    final currentUserId = ref.read(userInfoNotifierProvider)!.id;
+    return message.getChatId(currentUserId);
   }
 
   // 清理资源

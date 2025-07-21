@@ -87,12 +87,7 @@ class MqttService {
     _client.onAutoReconnected = _onAutoReconnected;
 
     // 设置连接消息
-    final connMessage = MqttConnectMessage()
-        .withClientIdentifier(_clientId)
-        .withWillTopic('$_topicPrefix/status/$_currentUserId')
-        .withWillMessage('offline')
-        .startClean()
-        .withWillQos(MqttQos.atLeastOnce);
+    final connMessage = MqttConnectMessage().withClientIdentifier(_clientId);
 
     if (_username.isNotEmpty) {
       connMessage.authenticateAs(_username, _password);
@@ -117,9 +112,6 @@ class MqttService {
         // 订阅用户相关主题
         await _subscribeToUserTopics();
 
-        // 发布用户在线状态
-        await _publishUserStatus('online');
-
         return true;
       } else {
         connectionState.value = MqttConnectionState.faulted;
@@ -136,9 +128,6 @@ class MqttService {
   Future<void> disconnect() async {
     try {
       connectionState.value = MqttConnectionState.disconnecting;
-
-      // 发布用户离线状态
-      await _publishUserStatus('offline');
 
       _client.disconnect();
     } catch (e) {
@@ -175,78 +164,15 @@ class MqttService {
     _cacheMessage(receiverId, MessageInfo.fromJson(message));
   }
 
-  // 订阅聊天室
-  Future<void> subscribeToRoom(String roomId) async {
-    if (_client.connectionStatus?.state != MqttConnectionState.connected) {
-      return;
-    }
-
-    final topics = [
-      '$_topicPrefix/room/$roomId/messages',
-      '$_topicPrefix/room/$roomId/events',
-    ];
-
-    for (final topic in topics) {
-      _client.subscribe(topic, MqttQos.atLeastOnce);
-    }
-  }
-
-  // 取消订阅聊天室
-  Future<void> unsubscribeFromRoom(String roomId) async {
-    if (_client.connectionStatus?.state != MqttConnectionState.connected) {
-      return;
-    }
-
-    final topics = [
-      '$_topicPrefix/room/$roomId/messages',
-      '$_topicPrefix/room/$roomId/typing',
-      '$_topicPrefix/room/$roomId/read',
-      '$_topicPrefix/room/$roomId/events',
-    ];
-
-    for (final topic in topics) {
-      _client.unsubscribe(topic);
-    }
-  }
-
   // 订阅用户主题
   Future<void> _subscribeToUserTopics() async {
     final topics = [
       '$_topicPrefix/user/$_currentUserId/messages',
-      '$_topicPrefix/user/$_currentUserId/typing',
-      '$_topicPrefix/user/$_currentUserId/read',
-      '$_topicPrefix/user/$_currentUserId/events',
-      '$_topicPrefix/broadcast/messages',
-      '$_topicPrefix/broadcast/events',
     ];
 
     for (final topic in topics) {
       _client.subscribe(topic, MqttQos.atLeastOnce);
     }
-  }
-
-  // 发布用户状态
-  Future<void> _publishUserStatus(String status) async {
-    if (_client.connectionStatus!.state != MqttConnectionState.connected) {
-      return;
-    }
-
-    final message = {
-      'userId': _currentUserId,
-      'status': status,
-      'timestamp': DateTime.now().toIso8601String(),
-    };
-
-    final topic = '$_topicPrefix/status/$_currentUserId';
-    final builder = MqttClientPayloadBuilder();
-    builder.addString(jsonEncode(message));
-
-    _client.publishMessage(
-      topic,
-      MqttQos.atLeastOnce,
-      builder.payload!,
-      retain: true,
-    );
   }
 
   // 消息处理
@@ -301,15 +227,5 @@ class MqttService {
   void _onAutoReconnected() {
     debugPrint('MQTT 自动重连成功');
     connectionState.value = MqttConnectionState.connected;
-  }
-
-  // 销毁资源
-  void dispose() {
-    try {
-      // 先断开连接（会发送离线状态）
-      disconnect();
-    } catch (e) {
-      debugPrint('销毁资源时断开连接失败: $e');
-    }
   }
 }

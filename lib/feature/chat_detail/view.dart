@@ -1,3 +1,4 @@
+import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,7 +36,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       resizeToAvoidBottomInset: false,
       appBar: commonAppbar(
         context,
-        title: widget.userId,
+        title: ref.watch(userListProvider.notifier.select((it) => it.getUser(widget.userId)))?.name ?? '',
         actions: [
           CommonIconButton(onTap: () {}, child: const Icon(Icons.more_horiz)),
         ],

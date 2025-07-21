@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/data_base/data_base_service.dart';
 import 'package:chat_demo/common/data_base/database.dart';
+import 'package:chat_demo/common/extension/util_extension.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -42,5 +43,9 @@ class UserList extends _$UserList {
   void deleteUserList() async {
     await ref.read(dataBaseServiceProvider.notifier).deleteUserList();
     reloadData();
+  }
+
+  UserTableInfoData? getUser(String userId) {
+    return state.value?.let((it) => it.firstWhere((item) => item.userId == userId));
   }
 }

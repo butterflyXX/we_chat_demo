@@ -45,9 +45,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       backgroundColor: commonAppBarBackColor,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: _unfocus,
+        onTap: stateNotifier.unfocus,
         onVerticalDragStart: (_) {
-          _unfocus();
+          stateNotifier.unfocus();
         },
         child: Column(
           children: [
@@ -85,12 +85,5 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
         ),
       ),
     );
-  }
-
-  void _unfocus() {
-    ref
-        .read(chatBottomBarControllerProvider(widget.userId).notifier)
-        .setType(ChatBottomBarInputType.normal);
-    cancelKeyBoard();
   }
 }

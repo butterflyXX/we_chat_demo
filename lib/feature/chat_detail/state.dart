@@ -1,9 +1,7 @@
 import 'package:chat_demo/common/common.dart';
-import 'package:chat_demo/common/data_base/database.dart';
 import 'package:chat_demo/common/mqtt/chat_manager.dart';
-import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:chat_demo/common/mqtt/mqtt_service.dart';
-import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -45,7 +43,11 @@ class ChatDetailVM extends _$ChatDetailVM {
     }
   }
 
-  void hasFocus(bool hasFocus) {}
+  void hasFocus(bool hasFocus) {
+    if (!hasFocus && ref.read(chatBottomBarControllerProvider(chatId)) == ChatBottomBarInputType.keyboard) {
+      unfocus();
+    }
+  }
 
   void setCanScroll(bool canScroll) {
     state = state.copyWith(canScroll: canScroll);
@@ -55,6 +57,15 @@ class ChatDetailVM extends _$ChatDetailVM {
     // 监听新消息
     _listenToMessages();
     scrollToBottom(false, true);
+    final subscription = ref.listen(chatBottomBarControllerProvider(chatId), (oldValue, newValue) {
+      setCanScroll(newValue == ChatBottomBarInputType.normal);
+      if (newValue != ChatBottomBarInputType.keyboard) {
+        cancelKeyBoard();
+      }
+    });
+    ref.onDispose(() {
+      subscription.close();
+    });
   }
 
   // 监听新消息并更新状态
@@ -85,6 +96,10 @@ class ChatDetailVM extends _$ChatDetailVM {
       debugPrint('发送消息失败: $e');
     }
     scrollToBottom(true, true);
+  }
+
+  void unfocus() {
+    ref.read(chatBottomBarControllerProvider(chatId).notifier).setType(ChatBottomBarInputType.normal);
   }
 }
 

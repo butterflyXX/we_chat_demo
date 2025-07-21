@@ -75,7 +75,6 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
                   ),
                   CommonIconButton(
                     onTap: () {
-                      cancelKeyBoard();
                       controller.setType(ChatBottomBarInputType.setting);
                     },
                     child: const Icon(Icons.add_circle_outline),
@@ -105,7 +104,6 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
                     opacity: type == ChatBottomBarInputType.setting ? 1 : 0,
                     child: setting(),
                   );
-
                   final duration =
                       (controller.lastType == ChatBottomBarInputType.keyboard ||
                           type == ChatBottomBarInputType.keyboard)

@@ -6,7 +6,7 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatDetailVMHash() => r'41e3b674253c6ad93b5dba55e73e8116d873d4a9';
+String _$chatDetailVMHash() => r'65819bfafa311d4f5ae5c7fe5ee6ad5eac608fa0';
 
 /// Copied from Dart SDK
 class _SystemHash {

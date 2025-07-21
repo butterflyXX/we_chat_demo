@@ -6,20 +6,21 @@ part of 'chat_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatManagerHash() => r'fe91c1760c14bb7e60a0a9d8c6fb8e7f5bf8a5b2';
+String _$chatManagerHash() => r'0aa5907674684b6a9ac71de43a65877b8fede3b1';
 
 /// See also [ChatManager].
 @ProviderFor(ChatManager)
-final chatManagerProvider = NotifierProvider<ChatManager, int>.internal(
-  ChatManager.new,
-  name: r'chatManagerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$chatManagerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final chatManagerProvider =
+    NotifierProvider<ChatManager, Map<String, List<MessageInfo>>>.internal(
+      ChatManager.new,
+      name: r'chatManagerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$chatManagerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-typedef _$ChatManager = Notifier<int>;
+typedef _$ChatManager = Notifier<Map<String, List<MessageInfo>>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

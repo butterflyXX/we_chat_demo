@@ -15,14 +15,14 @@ part 'chat_manager.g.dart';
 @Riverpod(keepAlive: true)
 class ChatManager extends _$ChatManager {
   late final _mqttService = ref.read(mqttServiceNotifierProvider);
-  final Map<String, List<MessageInfo>> _messageCache = {};
 
   late final _dbService = ref.read(dataBaseServiceProvider.notifier);
 
   @override
-  int build() {
-    _mqttService.messageStream.listen(_handleMqttMessage);
-    return 0;
+  Map<String, List<MessageInfo>> build() {
+    final subscription = _mqttService.messageStream.listen(_handleMqttMessage);
+    ref.onDispose(subscription.cancel);
+    return {};
   }
 
   // 初始化聊天管理器
@@ -48,6 +48,7 @@ class ChatManager extends _$ChatManager {
   // 连接到 MQTT 服务器
   Future<bool> connect() async {
     return await _mqttService.connect();
+    
   }
 
   // 发送消息
@@ -66,7 +67,7 @@ class ChatManager extends _$ChatManager {
   // 从数据库初始化消息缓存
   Future<void> initCacheFromDb() async {
     final dbMessages = await _dbService.getMessages();
-    _messageCache.clear();
+    final Map<String, List<MessageInfo>> _messageCache = {};
     for (final msg in dbMessages) {
       // 组装 MessageInfo
       final messageInfo = MessageInfo(
@@ -85,6 +86,7 @@ class ChatManager extends _$ChatManager {
     for (final list in _messageCache.values) {
       list.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     }
+    state = _messageCache;
   }
 
   // 处理 MQTT 消息
@@ -101,15 +103,8 @@ class ChatManager extends _$ChatManager {
 
     // 确定聊天 ID
     String chatId = _chatId(message);
-
-    if (!_messageCache.containsKey(chatId)) {
-      _messageCache[chatId] = [];
-    }
-
-    _messageCache[chatId]!.add(message);
-
-    // 按时间排序
-    _messageCache[chatId]!.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    List<MessageInfo> list = [...(state[chatId] ?? []), message];
+    state = {...state, chatId: list};
 
     _insertMessage(message);
 
@@ -143,11 +138,6 @@ class ChatManager extends _$ChatManager {
     ref.read(userListProvider.notifier).reloadData();
   }
 
-  // 获取缓存的消息
-  List<MessageInfo> getCachedMessages(String chatId) {
-    return _messageCache[chatId] ?? [];
-  }
-
   // 断开MQTT连接
   Future<void> disconnect() async {
     await _mqttService.disconnect();
@@ -160,6 +150,6 @@ class ChatManager extends _$ChatManager {
 
   // 清理资源
   void dispose() {
-    _messageCache.clear();
+    state = {};
   }
 }

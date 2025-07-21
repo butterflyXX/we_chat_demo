@@ -54,42 +54,17 @@ class ChatDetailVM extends _$ChatDetailVM {
   void _initialize() async {
     // 监听新消息
     _listenToMessages();
-    // 加载缓存的消息
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _loadMessages();
-    });
-  }
-
-  void _loadMessages() {
-    final cachedMessages = _chatManager.getCachedMessages(chatId);
-    if (cachedMessages.isEmpty) {
-      return;
-    }
-    // 按时间排序，最新消息在最下面
-    cachedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    state = state.copyWith(messages: cachedMessages);
+    scrollToBottom(false, true);
   }
 
   // 监听新消息并更新状态
   void _listenToMessages() {
-    final subscription = ref
-        .read(mqttServiceNotifierProvider)
-        .messageStream
-        .listen(
-          (messageData) {
-            if (messageData.chatId == chatId) {
-              _loadMessages();
-              scrollToBottom(true, true);
-            }
-          },
-          onError: (error) {
-            llPrint("Error in message stream: $error");
-          },
-          cancelOnError: false,
-        );
+    final subscription = ref.listen(chatManagerProvider, (oldValue, newValue) {
+      scrollToBottom(true, true);
+    });
     ref.onDispose(() {
       llPrint('Cancelling message stream subscription');
-      subscription.cancel();
+      subscription.close();
     });
   }
 
@@ -117,6 +92,5 @@ class ChatDetailVM extends _$ChatDetailVM {
 abstract class ChatDetailState with _$ChatDetailState {
   const factory ChatDetailState({
     @Default(true) bool canScroll,
-    @Default([]) List<MessageInfo> messages,
   }) = _ChatDetailState;
 }

@@ -1,3 +1,4 @@
+import 'package:chat_demo/common/mqtt/chat_manager.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       chatDetailVMProvider(widget.userId).notifier,
     );
     final state = ref.watch(chatDetailVMProvider(widget.userId));
-    final chatList = state.messages;
+    final chatList = ref.watch(chatManagerProvider.select((state) => state[widget.userId])) ?? [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: commonAppbar(

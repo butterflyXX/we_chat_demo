@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatDetailState {
 
- bool get canScroll; List<MessageInfo> get messages;
+ bool get canScroll;
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ChatDetailStateCopyWith<ChatDetailState> get copyWith => _$ChatDetailStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll)&&const DeepCollectionEquality().equals(other.messages, messages));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,canScroll,const DeepCollectionEquality().hash(messages));
+int get hashCode => Object.hash(runtimeType,canScroll);
 
 @override
 String toString() {
-  return 'ChatDetailState(canScroll: $canScroll, messages: $messages)';
+  return 'ChatDetailState(canScroll: $canScroll)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ChatDetailStateCopyWith<$Res>  {
   factory $ChatDetailStateCopyWith(ChatDetailState value, $Res Function(ChatDetailState) _then) = _$ChatDetailStateCopyWithImpl;
 @useResult
 $Res call({
- bool canScroll, List<MessageInfo> messages
+ bool canScroll
 });
 
 
@@ -63,11 +63,10 @@ class _$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? canScroll = null,Object? messages = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? canScroll = null,}) {
   return _then(_self.copyWith(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
-as bool,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
-as List<MessageInfo>,
+as bool,
   ));
 }
 
@@ -78,17 +77,10 @@ as List<MessageInfo>,
 
 
 class _ChatDetailState implements ChatDetailState {
-  const _ChatDetailState({this.canScroll = true, final  List<MessageInfo> messages = const []}): _messages = messages;
+  const _ChatDetailState({this.canScroll = true});
   
 
 @override@JsonKey() final  bool canScroll;
- final  List<MessageInfo> _messages;
-@override@JsonKey() List<MessageInfo> get messages {
-  if (_messages is EqualUnmodifiableListView) return _messages;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_messages);
-}
-
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -100,16 +92,16 @@ _$ChatDetailStateCopyWith<_ChatDetailState> get copyWith => __$ChatDetailStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll)&&const DeepCollectionEquality().equals(other._messages, _messages));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,canScroll,const DeepCollectionEquality().hash(_messages));
+int get hashCode => Object.hash(runtimeType,canScroll);
 
 @override
 String toString() {
-  return 'ChatDetailState(canScroll: $canScroll, messages: $messages)';
+  return 'ChatDetailState(canScroll: $canScroll)';
 }
 
 
@@ -120,7 +112,7 @@ abstract mixin class _$ChatDetailStateCopyWith<$Res> implements $ChatDetailState
   factory _$ChatDetailStateCopyWith(_ChatDetailState value, $Res Function(_ChatDetailState) _then) = __$ChatDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool canScroll, List<MessageInfo> messages
+ bool canScroll
 });
 
 
@@ -137,11 +129,10 @@ class __$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? canScroll = null,Object? messages = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? canScroll = null,}) {
   return _then(_ChatDetailState(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
-as bool,messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
-as List<MessageInfo>,
+as bool,
   ));
 }
 

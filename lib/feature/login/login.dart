@@ -1,7 +1,4 @@
-import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
-import 'package:chat_demo/common/mqtt/chat_manager.dart';
-import 'package:chat_demo/common/config/mqtt_config.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

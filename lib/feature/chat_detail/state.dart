@@ -73,7 +73,7 @@ class ChatDetailVM extends _$ChatDetailVM {
     final isConnected =
         ref.read(mqttServiceNotifierProvider).connectionState.value ==
         MqttConnectionState.connected;
-    if (content.trim().isEmpty || isConnected) return;
+    if (content.trim().isEmpty || !isConnected) return;
     try {
       await _chatManager.sendMessage(
         receiverId: chatId,

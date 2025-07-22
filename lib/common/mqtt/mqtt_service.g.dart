@@ -7,12 +7,12 @@ part of 'mqtt_service.dart';
 // **************************************************************************
 
 String _$mqttServiceNotifierHash() =>
-    r'362e8f7080692bfbbb504c51e1aa52558d5ee192';
+    r'9ae442f578a25cba6517a5600a485533228e49d1';
 
 /// See also [MqttServiceNotifier].
 @ProviderFor(MqttServiceNotifier)
 final mqttServiceNotifierProvider =
-    NotifierProvider<MqttServiceNotifier, MqttService>.internal(
+    NotifierProvider<MqttServiceNotifier, MqttServiceNotifier>.internal(
       MqttServiceNotifier.new,
       name: r'mqttServiceNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,7 +22,7 @@ final mqttServiceNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$MqttServiceNotifier = Notifier<MqttService>;
+typedef _$MqttServiceNotifier = Notifier<MqttServiceNotifier>;
 String _$mqttConnectionNotifierHash() =>
     r'28e594d70ce3abff3088fa107d117806a799feb3';
 

@@ -13,33 +13,13 @@ part 'mqtt_service.g.dart';
 // MQTT 服务提供者
 @Riverpod(keepAlive: true)
 class MqttServiceNotifier extends _$MqttServiceNotifier {
-  @override
-  MqttService build() {
-    return MqttService();
-  }
-
-  MqttConnectionState get connectionState => state.connectionState.value;
-}
-
-// MQTT 连接状态提供者
-@Riverpod(keepAlive: true)
-class MqttConnectionNotifier extends _$MqttConnectionNotifier {
-  @override
-  MqttConnectionState build() => MqttConnectionState.disconnected;
-
-  void setConnectionState(MqttConnectionState newState) {
-    state = newState;
-  }
-}
-
-// MQTT 服务类
-class MqttService {
+  //======================== 基础字段 ========================
   late MqttServerClient _client;
   final StreamController<MqttMessageData> _messageStreamController =
       StreamController<MqttMessageData>.broadcast();
 
   // 配置参数
-  String _broker = 'broker.emqx.io'; // 免费的公共 MQTT 代理
+  String _broker = 'broker.emqx.io';
   int _port = 1883;
   String _clientId = '';
   String _username = '';
@@ -49,11 +29,18 @@ class MqttService {
   // 主题前缀
   static const String _topicPrefix = 'chat_demo';
 
-  // 流
-  Stream<MqttMessageData> get messageStream => _messageStreamController.stream;
-  ValueNotifier<MqttConnectionState> connectionState = ValueNotifier(MqttConnectionState.disconnected);
+  //======================== Riverpod build ==================
+  @override
+  MqttServiceNotifier build() {
+    // 返回自身，方便外部直接调用方法。
+    return this;
+  }
 
-  // 初始化 MQTT 客户端
+  //======================== 对外暴露 ========================
+  Stream<MqttMessageData> get messageStream =>
+      _messageStreamController.stream;
+
+  // 初始化客户端（不自动连接）
   Future<void> initialize({
     String? broker,
     int? port,
@@ -64,8 +51,7 @@ class MqttService {
   }) async {
     _broker = broker ?? _broker;
     _port = port ?? _port;
-    _clientId =
-        clientId ?? 'flutter_chat_${DateTime.now().millisecondsSinceEpoch}';
+    _clientId = clientId ?? 'flutter_chat_${DateTime.now().millisecondsSinceEpoch}';
     _username = username ?? _username;
     _password = password ?? _password;
     _currentUserId = userId;
@@ -77,41 +63,34 @@ class MqttService {
     _client.connectTimeoutPeriod = 5000;
     _client.autoReconnect = true;
 
-    // 设置回调
-    _client.onConnected = _onConnected;
-    _client.onDisconnected = _onDisconnected;
-    _client.onUnsubscribed = _onUnsubscribed;
-    _client.onSubscribed = _onSubscribed;
-    _client.onSubscribeFail = _onSubscribeFail;
-    _client.onAutoReconnect = _onAutoReconnect;
-    _client.onAutoReconnected = _onAutoReconnected;
+    // 绑定回调
+    _client
+      ..onConnected = _onConnected
+      ..onDisconnected = _onDisconnected
+      ..onUnsubscribed = _onUnsubscribed
+      ..onSubscribed = _onSubscribed
+      ..onSubscribeFail = _onSubscribeFail
+      ..onAutoReconnect = _onAutoReconnect
+      ..onAutoReconnected = _onAutoReconnected;
 
-    // 设置连接消息
     final connMessage = MqttConnectMessage().withClientIdentifier(_clientId);
-
     if (_username.isNotEmpty) {
       connMessage.authenticateAs(_username, _password);
     }
-
     _client.connectionMessage = connMessage;
   }
 
-  // 连接到 MQTT 代理
+  // 连接到 MQTT 服务器
   Future<bool> connect() async {
     try {
       _setConnectionState(MqttConnectionState.connecting);
-
       final status = await _client.connect();
-
       if (status?.state == MqttConnectionState.connected) {
         _setConnectionState(MqttConnectionState.connected);
-
         // 监听消息
         _client.updates?.listen(_onMessage);
-
-        // 订阅用户相关主题
+        // 订阅当前用户主题
         await _subscribeToUserTopics();
-
         return true;
       } else {
         _setConnectionState(MqttConnectionState.faulted);
@@ -127,7 +106,6 @@ class MqttService {
   Future<void> disconnect() async {
     try {
       _setConnectionState(MqttConnectionState.disconnecting);
-
       _client.disconnect();
     } catch (e) {
       debugPrint('MQTT 断开连接失败: $e');
@@ -138,7 +116,7 @@ class MqttService {
   Future<void> sendMessage({
     required String receiverId,
     required String content,
-    required String messageType,
+    String messageType = 'text',
   }) async {
     if (_client.connectionStatus?.state != MqttConnectionState.connected) {
       throw Exception('MQTT 未连接');
@@ -153,79 +131,53 @@ class MqttService {
     };
 
     final topic = '$_topicPrefix/user/$receiverId/messages';
-
-    final builder = MqttClientPayloadBuilder();
-
-    builder.addUTF8String(jsonEncode(message));
-
+    final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(message));
     _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-
     _cacheMessage(receiverId, MessageInfo.fromJson(message));
   }
 
-  // 订阅用户主题
+  //======================== 内部方法 ========================
   Future<void> _subscribeToUserTopics() async {
-    final topics = [
-      '$_topicPrefix/user/$_currentUserId/messages',
-    ];
-
-    for (final topic in topics) {
-      _client.subscribe(topic, MqttQos.atLeastOnce);
-    }
+    final topic = '$_topicPrefix/user/$_currentUserId/messages';
+    _client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
-  // 消息处理
   void _onMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
-    for (final message in messages) {
+    for (final msg in messages) {
       final payload = MqttPublishPayload.bytesToStringAsString(
-        (message.payload as MqttPublishMessage).payload.message,
+        (msg.payload as MqttPublishMessage).payload.message,
       );
-
-      final messageInfo = MessageInfo.fromJson(jsonDecode(payload));
-
-      _cacheMessage(messageInfo.senderId, MessageInfo.fromJson(jsonDecode(payload)));
+      final info = MessageInfo.fromJson(jsonDecode(payload));
+      _cacheMessage(info.senderId, info);
     }
   }
 
-  void _cacheMessage(String chatId, MessageInfo message) {
-    final messageData = MqttMessageData(
-      chatId: chatId,
-      messageInfo: message,
-    );
-    _messageStreamController.add(messageData);
+  void _cacheMessage(String chatId, MessageInfo msg) {
+    _messageStreamController.add(MqttMessageData(chatId: chatId, messageInfo: msg));
   }
 
-  // 连接回调
-  void _onConnected() {
-    _setConnectionState(MqttConnectionState.connected);
-  }
-
-  void _onDisconnected() {
-    _setConnectionState(MqttConnectionState.disconnected);
-  }
+  //----------- 各类回调 -------------
+  void _onConnected() => _setConnectionState(MqttConnectionState.connected);
+  void _onDisconnected() => _setConnectionState(MqttConnectionState.disconnected);
+  void _onSubscribed(String topic) => debugPrint('订阅成功: $topic');
+  void _onSubscribeFail(String topic) => debugPrint('订阅失败: $topic');
+  void _onUnsubscribed(String? topic) => debugPrint('取消订阅: $topic');
+  void _onAutoReconnect() => _setConnectionState(MqttConnectionState.connecting);
+  void _onAutoReconnected() => _setConnectionState(MqttConnectionState.connected);
 
   void _setConnectionState(MqttConnectionState state) {
     llPrint('MQTT 连接状态: $state');
-    connectionState.value = state;
+    ref.read(mqttConnectionNotifierProvider.notifier).setConnectionState(state);
   }
+}
 
-  void _onSubscribed(String topic) {
-    debugPrint('订阅成功: $topic');
-  }
+// MQTT 连接状态提供者
+@Riverpod(keepAlive: true)
+class MqttConnectionNotifier extends _$MqttConnectionNotifier {
+  @override
+  MqttConnectionState build() => MqttConnectionState.disconnected;
 
-  void _onSubscribeFail(String topic) {
-    debugPrint('订阅失败: $topic');
-  }
-
-  void _onUnsubscribed(String? topic) {
-    debugPrint('取消订阅: $topic');
-  }
-
-  void _onAutoReconnect() {
-    _setConnectionState(MqttConnectionState.connecting);
-  }
-
-  void _onAutoReconnected() {
-    _setConnectionState(MqttConnectionState.connected);
+  void setConnectionState(MqttConnectionState newState) {
+    state = newState;
   }
 }

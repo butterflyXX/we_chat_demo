@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chat_demo/common/color.dart';
-import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/widget/app_bar.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
 import 'package:chat_demo/feature/chat_detail/state.dart';
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar.dart';
-import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
 import 'package:chat_demo/feature/chat_detail/widget/chat_item_widget.dart';
 
 class ChatDetailPage extends ConsumerStatefulWidget {

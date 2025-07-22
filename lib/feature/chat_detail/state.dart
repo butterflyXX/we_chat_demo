@@ -27,7 +27,7 @@ class ChatDetailVM extends _$ChatDetailVM {
         controller.animateTo(
           controller.position.maxScrollExtent,
           duration: const Duration(milliseconds: 250),
-          curve: Curves.easeIn,
+          curve: Curves.easeOut,
         );
       } else {
         controller.jumpTo(controller.position.maxScrollExtent);
@@ -44,7 +44,7 @@ class ChatDetailVM extends _$ChatDetailVM {
   }
 
   void hasFocus(bool hasFocus) {
-    if (!hasFocus && ref.read(chatBottomBarControllerProvider(chatId)) == ChatBottomBarInputType.keyboard) {
+    if (_isExternalKeyboardHide(hasFocus)) {
       unfocus();
     }
   }
@@ -100,6 +100,11 @@ class ChatDetailVM extends _$ChatDetailVM {
 
   void unfocus() {
     ref.read(chatBottomBarControllerProvider(chatId).notifier).setType(ChatBottomBarInputType.normal);
+  }
+
+  bool _isExternalKeyboardHide(bool hasFocus) {
+    final type = ref.read(chatBottomBarControllerProvider(chatId));
+    return !hasFocus && type == ChatBottomBarInputType.keyboard;
   }
 }
 

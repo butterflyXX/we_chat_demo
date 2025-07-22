@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:chat_demo/common/color.dart';
-import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
 import 'package:chat_demo/common/widget/text_field/home_text_field.dart';
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';

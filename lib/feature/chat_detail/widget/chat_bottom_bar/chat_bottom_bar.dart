@@ -1,11 +1,14 @@
 import 'dart:math';
 
+import 'package:chat_demo/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_demo/common/color.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
 import 'package:chat_demo/common/widget/text_field/home_text_field.dart';
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
+import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/item_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 
 class ChatBottomBar extends ConsumerStatefulWidget {
   final String chatId;
@@ -96,7 +99,7 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
                     height = max(height, 34);
                   } else if (type == ChatBottomBarInputType.setting) {
                     height = mediaQuery.viewInsets.bottom;
-                    height = max(height, 200);
+                    height = max(height, 220);
                   }
                   final child = AnimatedOpacity(
                     duration: const Duration(milliseconds: 250),
@@ -125,6 +128,33 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
   }
 
   Widget setting() {
-    return Container(color: Colors.red);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            height: lineHeight,
+            color: Colors.grey,
+          ),
+          SizedBox(height: 16),
+          Wrap(
+        spacing: 40,
+        runSpacing: 10,
+        children: [
+          ItemWidget(title: '照片', icon: LucideIcons.image, onTap: () {}),
+          ItemWidget(title: '拍摄', icon: LucideIcons.camera, onTap: () {}),
+          ItemWidget(title: '位置', icon: LucideIcons.map_pin, onTap: () {}),
+          ItemWidget(title: '语音输入', icon: LucideIcons.mic, onTap: () {}),
+          ItemWidget(title: '收藏', icon: LucideIcons.heart, onTap: () {}),
+          ItemWidget(title: '个人名片', icon: LucideIcons.user, onTap: () {}),
+          ItemWidget(title: '文件', icon: LucideIcons.file, onTap: () {}),
+          ItemWidget(title: '音乐', icon: LucideIcons.music, onTap: () {}),
+        ],
+      )
+        ]
+      ),
+    ),
+    );
   }
 }

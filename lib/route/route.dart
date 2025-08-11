@@ -1,10 +1,13 @@
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:chat_demo/feature/add_user/add_user.dart';
+import 'package:chat_demo/feature/blue/blue_list_page/view.dart';
+import 'package:chat_demo/feature/blue/blue_page/view.dart';
 import 'package:chat_demo/feature/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_demo/feature/chat_detail/view.dart';
 import 'package:chat_demo/feature/home_tab/view.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:go_router/go_router.dart';
 
 part 'route.g.dart';
@@ -45,6 +48,8 @@ final router = GoRouter(
   routes: [
     TypedGoRoute<ChatDetailRoute>(path: 'chat_detail'),
     TypedGoRoute<AddUserRoute>(path: 'add_user'),
+    TypedGoRoute<BlueListRoute>(path: 'blue_list'),
+    TypedGoRoute<BluePageRoute>(path: 'blue'),
   ],
 )
 class HomeRoute extends GoRouteData with _$HomeRoute {
@@ -69,6 +74,21 @@ class AddUserRoute extends GoRouteData with _$AddUserRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const AddUserPage();
+}
+
+class BlueListRoute extends GoRouteData with _$BlueListRoute {
+  const BlueListRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const BlueListPage();
+}
+
+class BluePageRoute extends GoRouteData with _$BluePageRoute {
+  final String deviceId;
+  const BluePageRoute({required this.deviceId});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => BluePage(deviceId: deviceId);
 }
 
 @TypedGoRoute<LoginRoute>(path: '/login')

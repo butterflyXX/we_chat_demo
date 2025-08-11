@@ -1,15 +1,16 @@
 {
-    "dart.lineLength": 120,
-    "coderabbit.agentType": "Cline",
-    "window.zoomLevel": 0.5,
-    "editor.semanticTokenColorCustomizations": {
-        "[One Dark Pro Night Flat]": {
-            "rules": {
-                "class": "#4BE5AF",
-                "enum": "#4BE5AF",
-                "class.constructor": "#e5c07b",
-                "class.constructor.declaration": "#4BE5AF",
-            }
-        }
-    },
-} 
+  "dart.lineLength": 120,
+  "coderabbit.agentType": "Cline",
+  "window.zoomLevel": 0.5,
+  "editor.semanticTokenColorCustomizations": {
+    "[One Dark Pro Night Flat]": {
+      "rules": {
+        "class": "#4BE5AF",
+        "enum": "#4BE5AF",
+        "class.constructor": "#e5c07b",
+        "class.constructor.declaration": "#4BE5AF"
+      }
+    }
+  },
+  "dart.flutterSdkPath": ".fvm/versions/3.32.8"
+}

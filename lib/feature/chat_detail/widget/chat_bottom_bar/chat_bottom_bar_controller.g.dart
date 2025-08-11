@@ -7,7 +7,7 @@ part of 'chat_bottom_bar_controller.dart';
 // **************************************************************************
 
 String _$chatBottomBarControllerHash() =>
-    r'b21be4da3a108a8a458d98d3933030edf9fc760d';
+    r'7fb40974ae09681987572c94f1e11a8ad1fc6a10';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -19,6 +19,8 @@ RouteBase get $homeRoute => GoRouteData.$route(
       factory: _$ChatDetailRoute._fromState,
     ),
     GoRouteData.$route(path: 'add_user', factory: _$AddUserRoute._fromState),
+    GoRouteData.$route(path: 'blue_list', factory: _$BlueListRoute._fromState),
+    GoRouteData.$route(path: 'blue', factory: _$BluePageRoute._fromState),
   ],
 );
 
@@ -73,6 +75,52 @@ mixin _$AddUserRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/add_user');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin _$BlueListRoute on GoRouteData {
+  static BlueListRoute _fromState(GoRouterState state) => const BlueListRoute();
+
+  @override
+  String get location => GoRouteData.$location('/blue_list');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin _$BluePageRoute on GoRouteData {
+  static BluePageRoute _fromState(GoRouterState state) =>
+      BluePageRoute(deviceId: state.uri.queryParameters['device-id']!);
+
+  BluePageRoute get _self => this as BluePageRoute;
+
+  @override
+  String get location => GoRouteData.$location(
+    '/blue',
+    queryParams: {'device-id': _self.deviceId},
+  );
 
   @override
   void go(BuildContext context) => context.go(location);

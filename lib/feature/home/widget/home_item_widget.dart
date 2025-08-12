@@ -44,6 +44,7 @@ class HomeItemWidget extends StatelessWidget {
                           color: disableTintColor,
                           fontSize: 12.sp,
                         ),
+
                       ),
                     ],
                   ),
@@ -53,6 +54,8 @@ class HomeItemWidget extends StatelessWidget {
                       fontSize: 12.sp,
                       color: homeSearchTintColor,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

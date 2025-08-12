@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat_bottom_bar_controller.g.dart';
 
-enum ChatBottomBarInputType { normal, keyboard, setting }
+enum ChatBottomBarInputType { normal, keyboard, setting, voice }
 
 @riverpod
 class ChatBottomBarController extends _$ChatBottomBarController {

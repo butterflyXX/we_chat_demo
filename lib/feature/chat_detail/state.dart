@@ -53,6 +53,10 @@ class ChatDetailVM extends _$ChatDetailVM {
     state = state.copyWith(canScroll: canScroll);
   }
 
+  void setIsRecord(bool isRecord) {
+    state = state.copyWith(isRecord: isRecord);
+  }
+
   void _initialize() async {
     // 监听新消息
     _listenToMessages();
@@ -110,5 +114,6 @@ class ChatDetailVM extends _$ChatDetailVM {
 abstract class ChatDetailState with _$ChatDetailState {
   const factory ChatDetailState({
     @Default(true) bool canScroll,
+    @Default(false) bool isRecord,
   }) = _ChatDetailState;
 }

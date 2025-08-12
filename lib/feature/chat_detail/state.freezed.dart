@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatDetailState {
 
- bool get canScroll;
+ bool get canScroll; bool get isRecord;
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ChatDetailStateCopyWith<ChatDetailState> get copyWith => _$ChatDetailStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll)&&(identical(other.isRecord, isRecord) || other.isRecord == isRecord));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,canScroll);
+int get hashCode => Object.hash(runtimeType,canScroll,isRecord);
 
 @override
 String toString() {
-  return 'ChatDetailState(canScroll: $canScroll)';
+  return 'ChatDetailState(canScroll: $canScroll, isRecord: $isRecord)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ChatDetailStateCopyWith<$Res>  {
   factory $ChatDetailStateCopyWith(ChatDetailState value, $Res Function(ChatDetailState) _then) = _$ChatDetailStateCopyWithImpl;
 @useResult
 $Res call({
- bool canScroll
+ bool canScroll, bool isRecord
 });
 
 
@@ -63,9 +63,10 @@ class _$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? canScroll = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? canScroll = null,Object? isRecord = null,}) {
   return _then(_self.copyWith(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
+as bool,isRecord: null == isRecord ? _self.isRecord : isRecord // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -77,10 +78,11 @@ as bool,
 
 
 class _ChatDetailState implements ChatDetailState {
-  const _ChatDetailState({this.canScroll = true});
+  const _ChatDetailState({this.canScroll = true, this.isRecord = false});
   
 
 @override@JsonKey() final  bool canScroll;
+@override@JsonKey() final  bool isRecord;
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -92,16 +94,16 @@ _$ChatDetailStateCopyWith<_ChatDetailState> get copyWith => __$ChatDetailStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.canScroll, canScroll) || other.canScroll == canScroll)&&(identical(other.isRecord, isRecord) || other.isRecord == isRecord));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,canScroll);
+int get hashCode => Object.hash(runtimeType,canScroll,isRecord);
 
 @override
 String toString() {
-  return 'ChatDetailState(canScroll: $canScroll)';
+  return 'ChatDetailState(canScroll: $canScroll, isRecord: $isRecord)';
 }
 
 
@@ -112,7 +114,7 @@ abstract mixin class _$ChatDetailStateCopyWith<$Res> implements $ChatDetailState
   factory _$ChatDetailStateCopyWith(_ChatDetailState value, $Res Function(_ChatDetailState) _then) = __$ChatDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool canScroll
+ bool canScroll, bool isRecord
 });
 
 
@@ -129,9 +131,10 @@ class __$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? canScroll = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? canScroll = null,Object? isRecord = null,}) {
   return _then(_ChatDetailState(
 canScroll: null == canScroll ? _self.canScroll : canScroll // ignore: cast_nullable_to_non_nullable
+as bool,isRecord: null == isRecord ? _self.isRecord : isRecord // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MessageInfo {
 
- String get messageId; String get senderId; String get receiverId; String get content; int get timestamp;
+ String get messageId; String get senderId; String get receiverId; String get content; int get timestamp; String get messageType;
 /// Create a copy of MessageInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $MessageInfoCopyWith<MessageInfo> get copyWith => _$MessageInfoCopyWithImpl<Mess
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageInfo&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.receiverId, receiverId) || other.receiverId == receiverId)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageInfo&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.receiverId, receiverId) || other.receiverId == receiverId)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.messageType, messageType) || other.messageType == messageType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,messageId,senderId,receiverId,content,timestamp);
+int get hashCode => Object.hash(runtimeType,messageId,senderId,receiverId,content,timestamp,messageType);
 
 @override
 String toString() {
-  return 'MessageInfo(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, content: $content, timestamp: $timestamp)';
+  return 'MessageInfo(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, content: $content, timestamp: $timestamp, messageType: $messageType)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $MessageInfoCopyWith<$Res>  {
   factory $MessageInfoCopyWith(MessageInfo value, $Res Function(MessageInfo) _then) = _$MessageInfoCopyWithImpl;
 @useResult
 $Res call({
- String messageId, String senderId, String receiverId, String content, int timestamp
+ String messageId, String senderId, String receiverId, String content, int timestamp, String messageType
 });
 
 
@@ -66,14 +66,15 @@ class _$MessageInfoCopyWithImpl<$Res>
 
 /// Create a copy of MessageInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? messageId = null,Object? senderId = null,Object? receiverId = null,Object? content = null,Object? timestamp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? messageId = null,Object? senderId = null,Object? receiverId = null,Object? content = null,Object? timestamp = null,Object? messageType = null,}) {
   return _then(_self.copyWith(
 messageId: null == messageId ? _self.messageId : messageId // ignore: cast_nullable_to_non_nullable
 as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
 as String,receiverId: null == receiverId ? _self.receiverId : receiverId // ignore: cast_nullable_to_non_nullable
 as String,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as int,
+as int,messageType: null == messageType ? _self.messageType : messageType // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -84,7 +85,7 @@ as int,
 @JsonSerializable()
 
 class _MessageInfo extends MessageInfo {
-  const _MessageInfo({required this.messageId, required this.senderId, required this.receiverId, required this.content, required this.timestamp}): super._();
+  const _MessageInfo({required this.messageId, required this.senderId, required this.receiverId, required this.content, required this.timestamp, this.messageType = 'text'}): super._();
   factory _MessageInfo.fromJson(Map<String, dynamic> json) => _$MessageInfoFromJson(json);
 
 @override final  String messageId;
@@ -92,6 +93,7 @@ class _MessageInfo extends MessageInfo {
 @override final  String receiverId;
 @override final  String content;
 @override final  int timestamp;
+@override@JsonKey() final  String messageType;
 
 /// Create a copy of MessageInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -106,16 +108,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageInfo&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.receiverId, receiverId) || other.receiverId == receiverId)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageInfo&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.receiverId, receiverId) || other.receiverId == receiverId)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.messageType, messageType) || other.messageType == messageType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,messageId,senderId,receiverId,content,timestamp);
+int get hashCode => Object.hash(runtimeType,messageId,senderId,receiverId,content,timestamp,messageType);
 
 @override
 String toString() {
-  return 'MessageInfo(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, content: $content, timestamp: $timestamp)';
+  return 'MessageInfo(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, content: $content, timestamp: $timestamp, messageType: $messageType)';
 }
 
 
@@ -126,7 +128,7 @@ abstract mixin class _$MessageInfoCopyWith<$Res> implements $MessageInfoCopyWith
   factory _$MessageInfoCopyWith(_MessageInfo value, $Res Function(_MessageInfo) _then) = __$MessageInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String messageId, String senderId, String receiverId, String content, int timestamp
+ String messageId, String senderId, String receiverId, String content, int timestamp, String messageType
 });
 
 
@@ -143,14 +145,15 @@ class __$MessageInfoCopyWithImpl<$Res>
 
 /// Create a copy of MessageInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? messageId = null,Object? senderId = null,Object? receiverId = null,Object? content = null,Object? timestamp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? messageId = null,Object? senderId = null,Object? receiverId = null,Object? content = null,Object? timestamp = null,Object? messageType = null,}) {
   return _then(_MessageInfo(
 messageId: null == messageId ? _self.messageId : messageId // ignore: cast_nullable_to_non_nullable
 as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
 as String,receiverId: null == receiverId ? _self.receiverId : receiverId // ignore: cast_nullable_to_non_nullable
 as String,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as int,
+as int,messageType: null == messageType ? _self.messageType : messageType // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

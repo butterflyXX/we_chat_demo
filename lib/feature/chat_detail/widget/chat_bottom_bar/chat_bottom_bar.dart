@@ -13,6 +13,7 @@ import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/item_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ChatBottomBar extends ConsumerStatefulWidget {
   final String chatId;
@@ -132,13 +133,16 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
 
   Widget voiceTextField() {
     return GestureDetector(
-      onLongPressStart: (details) {
+      onLongPressStart: (details) async {
         ref.read(chatDetailVMProvider(widget.chatId).notifier).setIsRecord(true);
-        serviceLocator.get<RecordService>().start();
+        final path = await ChatRecordService.createRecordPath();
+        llPrint("path: $path");
+        serviceLocator.get<RecordService>().start(path);
       },
       onLongPressEnd: (details) async {
         ref.read(chatDetailVMProvider(widget.chatId).notifier).setIsRecord(false);
         final path = await serviceLocator.get<RecordService>().stop();
+        if (path == null) return;
         llPrint("path: $path");
         final recordingState = ref.read(recordingStateProvider);
         if (recordingState == RecordingStateEnum.toText) {
@@ -150,6 +154,7 @@ class _ChatBottomBarState extends ConsumerState<ChatBottomBar> {
         } else {
           // 发送语音
           llPrint("发送语音");
+          ref.read(chatDetailVMProvider(widget.chatId).notifier).sendVoice(path);
         }
       },
       onLongPressMoveUpdate: (details) {

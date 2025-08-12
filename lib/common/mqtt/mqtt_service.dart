@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
+import 'package:chat_demo/common/services/record_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'mqtt_service.g.dart';
 
@@ -116,24 +119,49 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
   Future<void> sendMessage({
     required String receiverId,
     required String content,
-    String messageType = 'text',
+    required String messageType,
   }) async {
     if (_client.connectionStatus?.state != MqttConnectionState.connected) {
       throw Exception('MQTT 未连接');
     }
 
-    final message = {
+    var message = {
       'messageId': Uuid().v4(),
       'senderId': _currentUserId,
       'receiverId': receiverId,
       'content': content,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'messageType': messageType,
     };
+
+    _cacheMessage(receiverId, MessageInfo.fromJson(message));
+
+    // 构造本地缓存与实际要发送的数据
+    if (messageType == 'voice') {
+      // content 为本地路径 → 打包为 DTO
+      final localPath = content;
+      try {
+        final file = File(localPath);
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+
+          // 发送时用 DTO 字符串
+          message['content'] = base64Encode(bytes);
+        } else {
+          debugPrint('MQTT voice send: file not exists: $localPath');
+          // 仍按文本降级发送（不做本地缓存，避免脏数据）
+        }
+      } catch (e) {
+        debugPrint('MQTT voice pack dto failed: $e');
+      }
+    } else {
+      // 文本/其他类型：直接本地缓存
+      _cacheMessage(receiverId, MessageInfo.fromJson(message));
+    }
 
     final topic = '$_topicPrefix/user/$receiverId/messages';
     final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(message));
     _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-    _cacheMessage(receiverId, MessageInfo.fromJson(message));
   }
 
   //======================== 内部方法 ========================
@@ -144,11 +172,45 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
 
   void _onMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
     for (final msg in messages) {
-      final payload = MqttPublishPayload.bytesToStringAsString(
-        (msg.payload as MqttPublishMessage).payload.message,
-      );
-      final info = MessageInfo.fromJson(jsonDecode(payload));
-      _cacheMessage(info.senderId, info);
+      final publish = msg.payload as MqttPublishMessage;
+      final payloadStr =
+          MqttPublishPayload.bytesToStringAsString(publish.payload.message);
+      try {
+        final map = jsonDecode(payloadStr) as Map<String, dynamic>;
+        final messageType = (map['messageType'] as String?) ?? 'text';
+        if (messageType == 'voice') {
+          // content 内为语音DTO(JSON字符串)
+          final contentStr = map['content'] as String;
+          final bytes = base64Decode(contentStr);
+
+          final messageId = map['messageId'] as String;
+          final senderId = map['senderId'] as String;
+          final receiverId = map['receiverId'] as String;
+          final timestamp = (map['timestamp'] as num).toInt();
+
+          // 落盘到本地文件，再以本地路径生成 MessageInfo
+          Future(() async {
+            final filePath = await ChatRecordService.createRecordPath();
+            await File(filePath).writeAsBytes(bytes);
+
+            final info = MessageInfo(
+              messageId: messageId,
+              senderId: senderId,
+              receiverId: receiverId,
+              content: filePath,
+              timestamp: timestamp,
+              messageType: 'voice',
+            );
+            _cacheMessage(info.senderId, info);
+          });
+        } else {
+          // 文本等：直接转 Domain
+          final info = MessageInfo.fromJson(map);
+          _cacheMessage(info.senderId, info);
+        }
+      } catch (e) {
+        debugPrint('解析消息失败: $e');
+      }
     }
   }
 

@@ -6,7 +6,7 @@ part of 'recording_page.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recordingStateHash() => r'a94e395c4ba3f99e3d0f841437a34f006a3f8387';
+String _$recordingStateHash() => r'9b54fff1e01a7d52ddf07c6fd73b3c34b0911bb2';
 
 /// See also [RecordingState].
 @ProviderFor(RecordingState)

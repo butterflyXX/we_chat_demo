@@ -12,6 +12,7 @@ _MessageInfo _$MessageInfoFromJson(Map<String, dynamic> json) => _MessageInfo(
   receiverId: json['receiverId'] as String,
   content: json['content'] as String,
   timestamp: (json['timestamp'] as num).toInt(),
+  messageType: json['messageType'] as String? ?? 'text',
 );
 
 Map<String, dynamic> _$MessageInfoToJson(_MessageInfo instance) =>
@@ -21,6 +22,7 @@ Map<String, dynamic> _$MessageInfoToJson(_MessageInfo instance) =>
       'receiverId': instance.receiverId,
       'content': instance.content,
       'timestamp': instance.timestamp,
+      'messageType': instance.messageType,
     };
 
 _MqttMessageData _$MqttMessageDataFromJson(Map<String, dynamic> json) =>

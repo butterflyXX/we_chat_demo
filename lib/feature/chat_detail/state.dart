@@ -91,7 +91,6 @@ class ChatDetailVM extends _$ChatDetailVM {
       await _chatManager.sendMessage(
         receiverId: chatId,
         content: content.trim(),
-        messageType: 'text',
       );
     } catch (e) {
       // 显示错误
@@ -99,6 +98,32 @@ class ChatDetailVM extends _$ChatDetailVM {
     }
     scrollToBottom(true, true);
   }
+
+  // 发送语音消息
+  Future<void> sendVoice(String audioFilePath) async {
+    final isConnected = ref.read(mqttConnectionNotifierProvider) == MqttConnectionState.connected;
+    if (!isConnected) {
+      debugPrint('MQTT 未连接，无法发送语音消息');
+      return;
+    }
+
+    try {
+      // 使用 ChatManager 的 sendVoiceMessage 方法
+      await _chatManager.sendVoiceMessage(
+        receiverId: chatId,
+        audioFilePath: audioFilePath,
+      );
+
+      llPrint('语音消息发送成功，文件保留: $audioFilePath');
+      
+      // 滚动到底部
+      scrollToBottom(true, true);
+      
+    } catch (e) {
+      debugPrint('发送语音消息失败: $e');
+    }
+  }
+  
 
   void unfocus() {
     ref.read(chatBottomBarControllerProvider(chatId).notifier).setType(ChatBottomBarInputType.normal);

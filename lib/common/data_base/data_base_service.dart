@@ -28,6 +28,7 @@ class DataBaseService extends _$DataBaseService {
 
   Future<void> deleteUserList() async {
     await state.delete(state.userTableInfo).go();
+    await state.delete(state.messageTable).go();
   }
 
   Future<void> insertOrUpdateMessage(MessageTableCompanion message) async {

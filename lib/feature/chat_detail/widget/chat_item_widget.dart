@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chat_demo/common/color.dart';
 import 'package:chat_demo/common/widget/chat_bubble.dart';
+import 'package:just_audio/just_audio.dart';
 
 class ChatItemWidget extends StatelessWidget {
   final MessageInfo model;
@@ -21,14 +25,14 @@ class ChatItemWidget extends StatelessWidget {
           child: iconWidget(),
         );
 
-        final text = textWidget(textWidth);
+        final contentWidget = model.messageType == 'text' ? textWidget(textWidth) : voiceWidget(textWidth);
 
         final padding = SizedBox(width: 10.w);
 
-        List<Widget> children = [icon, padding, Expanded(child: text)];
+        List<Widget> children = [icon, padding, Expanded(child: contentWidget)];
 
         if (!isUser()) {
-          children = [Expanded(child: text), padding, icon];
+          children = [Expanded(child: contentWidget), padding, icon];
         }
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +65,36 @@ class ChatItemWidget extends StatelessWidget {
             text: model.content,
             inLeft: isUser(),
             textBackColor: isUser() ? Colors.white : selectedTabBarItemColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget voiceWidget(double maxWidth) {
+    return Row(
+      mainAxisAlignment: !isUser()
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            // 播放语音
+            try {
+              final player = AudioPlayer();
+              await player.setFilePath(model.content);
+              await player.play();
+            } catch (e) {
+              llPrint("播放语音失败: $e");
+            }
+          },
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: ChatBubble(
+              text: '语音消息',
+              inLeft: isUser(),
+              textBackColor: isUser() ? Colors.white : selectedTabBarItemColor,
+            ),
           ),
         ),
       ],

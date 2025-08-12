@@ -13,6 +13,7 @@ abstract class MessageInfo with _$MessageInfo {
     required String receiverId,
     required String content,
     required int timestamp,
+    @Default('text') String messageType,
   }) = _MessageInfo;
 
   factory MessageInfo.fromJson(Map<String, dynamic> json) =>

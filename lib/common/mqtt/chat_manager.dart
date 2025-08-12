@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
@@ -55,12 +57,24 @@ class ChatManager extends _$ChatManager {
   Future<void> sendMessage({
     required String receiverId,
     required String content,
-    String messageType = 'text',
   }) async {
     await _mqttService.sendMessage(
       receiverId: receiverId,
       content: content,
-      messageType: messageType,
+      messageType: 'text',
+    );
+  }
+
+  // 发送语音（DTO传输，端上保路径）
+  Future<void> sendVoiceMessage({
+    required String receiverId,
+    required String audioFilePath,
+    String ext = 'm4a',
+  }) async {
+    await _mqttService.sendMessage(
+      receiverId: receiverId,
+      content: audioFilePath,
+      messageType: 'voice',
     );
   }
 
@@ -76,6 +90,7 @@ class ChatManager extends _$ChatManager {
         receiverId: msg.receiverId,
         content: msg.content,
         timestamp: msg.timestamp,
+        messageType: msg.messageType,
       );
       // 确定聊天ID
       String chatId = _chatId(messageInfo);
@@ -113,14 +128,23 @@ class ChatManager extends _$ChatManager {
   }
 
   void _insertMessage(MessageInfo message) {
+    // 解析消息类型
+    String messageType = 'text';
+
+    if (message.messageType == 'voice') {
+      messageType = 'voice';
+    }
+
+    llPrint("message: $message");
+    
     _dbService.insertOrUpdateMessage(
       MessageTableCompanion.insert(
         loginUserId: ref.read(userInfoNotifierProvider)!.id,
         messageId: message.messageId,
         senderId: message.senderId,
         receiverId: message.receiverId,
-        content: message.content,
-        messageType: 'text',
+        content: message.content, // 保存原始内容
+        messageType: messageType,
         timestamp: message.timestamp,
       ),
     );
@@ -128,10 +152,23 @@ class ChatManager extends _$ChatManager {
 
   // 更新当前用户的 lastMessage 字段
   void _updateUserInfo(MessageInfo message) async {
+    // 解析消息内容，确定显示文本
+    String displayText = message.content;
+    
+    try {
+      final jsonData = jsonDecode(message.content);
+      if (jsonData is Map<String, dynamic> && jsonData['type'] == 'voice') {
+        displayText = '[语音消息]';
+      }
+    } catch (e) {
+      // 普通文本消息，直接使用原内容
+      displayText = message.content;
+    }
+    
     await _dbService.updateUser(_chatId(message), onGetChangeValue: () {
       return UserTableInfoCompanion(
         createdAt: Value(message.timestamp),
-        lastMessage: Value(message.content),
+        lastMessage: Value(displayText),
       );
     });
 

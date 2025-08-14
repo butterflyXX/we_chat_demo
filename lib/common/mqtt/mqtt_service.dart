@@ -9,7 +9,6 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:path_provider/path_provider.dart';
 
 part 'mqtt_service.g.dart';
 
@@ -125,43 +124,123 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
       throw Exception('MQTT 未连接');
     }
 
-    var message = {
-      'messageId': Uuid().v4(),
-      'senderId': _currentUserId,
-      'receiverId': receiverId,
-      'content': content,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'messageType': messageType,
-    };
+    final messageId = Uuid().v4();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    _cacheMessage(receiverId, MessageInfo.fromJson(message));
-
-    // 构造本地缓存与实际要发送的数据
     if (messageType == 'voice') {
-      // content 为本地路径 → 打包为 DTO
+      // 语音消息：分步传输
       final localPath = content;
       try {
         final file = File(localPath);
         if (await file.exists()) {
-          final bytes = await file.readAsBytes();
+          final fileSize = await file.length();
+          
+          // 1. 先发送快速通知（包含元数据，不含音频数据）
+          final quickMessage = {
+            'messageId': messageId,
+            'senderId': _currentUserId,
+            'receiverId': receiverId,
+            'content': '[语音消息]', // 快速显示
+            'timestamp': timestamp,
+            'messageType': 'voice_notify', // 新类型
+            'voiceInfo': {
+              'duration': 0, // 时长，后续可补充
+              'size': fileSize,     // 文件大小
+              'ext': 'm4a',
+            }
+          };
 
-          // 发送时用 DTO 字符串
-          message['content'] = base64Encode(bytes);
+          // 立即发送通知消息
+          final topic = '$_topicPrefix/user/$receiverId/messages';
+          final quickBuilder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(quickMessage));
+          _client.publishMessage(topic, MqttQos.atLeastOnce, quickBuilder.payload!);
+
+          // 本地缓存快速通知
+          _cacheMessage(
+            receiverId,
+            MessageInfo(
+              messageId: messageId,
+              senderId: _currentUserId,
+              receiverId: receiverId,
+              content: '[语音消息]',
+              timestamp: timestamp,
+              messageType: 'voice_notify',
+            ),
+          );
+
+          // 2. 异步发送音频数据
+          Future(() async {
+            try {
+              final bytes = await file.readAsBytes();
+              final audioMessage = {
+                'messageId': messageId, // 相同ID
+                'senderId': _currentUserId,
+                'receiverId': receiverId,
+                'content': base64Encode(bytes),
+                'timestamp': timestamp,
+                'messageType': 'voice_data',
+              };
+              
+              final audioBuilder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(audioMessage));
+              _client.publishMessage(topic, MqttQos.atLeastOnce, audioBuilder.payload!);
+              
+              debugPrint('语音数据发送完成: $messageId');
+            } catch (e) {
+              debugPrint('语音数据发送失败: $e');
+            }
+          });
+
         } else {
           debugPrint('MQTT voice send: file not exists: $localPath');
-          // 仍按文本降级发送（不做本地缓存，避免脏数据）
+          // 文件不存在，发送错误提示
+          final errorMessage = {
+            'messageId': messageId,
+            'senderId': _currentUserId,
+            'receiverId': receiverId,
+            'content': '[语音消息发送失败]',
+            'timestamp': timestamp,
+            'messageType': 'text',
+          };
+          final topic = '$_topicPrefix/user/$receiverId/messages';
+          final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(errorMessage));
+          _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+          
+          _cacheMessage(receiverId, MessageInfo.fromJson(errorMessage));
         }
       } catch (e) {
-        debugPrint('MQTT voice pack dto failed: $e');
+        debugPrint('MQTT voice pack failed: $e');
+        // 发送错误提示
+        final errorMessage = {
+          'messageId': messageId,
+          'senderId': _currentUserId,
+          'receiverId': receiverId,
+          'content': '[语音消息发送失败]',
+          'timestamp': timestamp,
+          'messageType': 'text',
+        };
+        final topic = '$_topicPrefix/user/$receiverId/messages';
+        final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(errorMessage));
+        _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+        
+        _cacheMessage(receiverId, MessageInfo.fromJson(errorMessage));
       }
     } else {
-      // 文本/其他类型：直接本地缓存
-      _cacheMessage(receiverId, MessageInfo.fromJson(message));
-    }
+      // 文本等其他类型：直接发送
+      final message = {
+        'messageId': messageId,
+        'senderId': _currentUserId,
+        'receiverId': receiverId,
+        'content': content,
+        'timestamp': timestamp,
+        'messageType': messageType,
+      };
 
-    final topic = '$_topicPrefix/user/$receiverId/messages';
-    final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(message));
-    _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+      _cacheMessage(receiverId, MessageInfo.fromJson(message));
+
+      final topic = '$_topicPrefix/user/$receiverId/messages';
+      final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(message));
+      _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+    }
   }
 
   //======================== 内部方法 ========================
@@ -178,8 +257,21 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
       try {
         final map = jsonDecode(payloadStr) as Map<String, dynamic>;
         final messageType = (map['messageType'] as String?) ?? 'text';
-        if (messageType == 'voice') {
-          // content 内为语音DTO(JSON字符串)
+        
+        if (messageType == 'voice_notify') {
+          // 语音通知：立即显示，等待音频数据
+          final info = MessageInfo(
+            messageId: map['messageId'] as String,
+            senderId: map['senderId'] as String,
+            receiverId: map['receiverId'] as String,
+            content: '[语音消息]', // 显示占位符
+            timestamp: (map['timestamp'] as num).toInt(),
+            messageType: 'voice_notify',
+          );
+          _cacheMessage(info.senderId, info);
+          
+        } else if (messageType == 'voice_data') {
+          // 语音数据：解码并保存到本地文件，然后更新现有消息
           final contentStr = map['content'] as String;
           final bytes = base64Decode(contentStr);
 
@@ -188,23 +280,36 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
           final receiverId = map['receiverId'] as String;
           final timestamp = (map['timestamp'] as num).toInt();
 
-          // 落盘到本地文件，再以本地路径生成 MessageInfo
+          // 落盘到本地文件，然后更新现有的 MessageInfo
           Future(() async {
-            final filePath = await ChatRecordService.createRecordPath();
-            await File(filePath).writeAsBytes(bytes);
+            try {
+              final filePath = await ChatRecordService.createRecordPath();
+              await File(filePath).writeAsBytes(bytes);
 
-            final info = MessageInfo(
-              messageId: messageId,
-              senderId: senderId,
-              receiverId: receiverId,
-              content: filePath,
-              timestamp: timestamp,
-              messageType: 'voice',
-            );
-            _cacheMessage(info.senderId, info);
+              // 更新为完整的语音消息（不重复添加，而是更新）
+              final updatedInfo = MessageInfo(
+                messageId: messageId,
+                senderId: senderId,
+                receiverId: receiverId,
+                content: filePath, // 本地路径
+                timestamp: timestamp,
+                messageType: 'voice', // 最终类型
+              );
+              
+              // 直接发送更新事件，让接收方知道这是更新操作
+              _messageStreamController.add(MqttMessageData(
+                chatId: senderId, 
+                messageInfo: updatedInfo,
+              ));
+              
+              debugPrint('语音数据接收完成: $messageId -> $filePath');
+            } catch (e) {
+              debugPrint('语音数据保存失败: $e');
+            }
           });
+          
         } else {
-          // 文本等：直接转 Domain
+          // 文本等其他类型：直接转 Domain
           final info = MessageInfo.fromJson(map);
           _cacheMessage(info.senderId, info);
         }

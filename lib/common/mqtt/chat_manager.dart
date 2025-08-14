@@ -4,6 +4,7 @@ import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -118,7 +119,14 @@ class ChatManager extends _$ChatManager {
 
     // 确定聊天 ID
     String chatId = _chatId(message);
-    List<MessageInfo> list = [...(state[chatId] ?? []), message];
+    List<MessageInfo> list = [...(state[chatId] ?? [])];
+    final targetMessage = list.firstWhereOrNull((element) => element.messageId == message.messageId);
+    if (targetMessage != null) {
+      final index = list.indexOf(targetMessage);
+      list[index] = message;
+    } else {
+      list.add(message);
+    }
     state = {...state, chatId: list};
 
     _insertMessage(message);

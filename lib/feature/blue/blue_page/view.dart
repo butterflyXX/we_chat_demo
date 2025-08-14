@@ -49,32 +49,6 @@ class _BluePageState extends ConsumerState<BluePage> {
     });
   }
 
-  void _connectDevice() {
-    _device = ref
-        .read(blueDevicesProvider)
-        .firstWhere((element) => element.device.id.toString() == widget.deviceId)
-        .device;
-    final device = _device;
-    if (device == null) {
-      return;
-    }
-    int count = 0;
-    final streamSubscription = device.state.listen((event) {
-      llPrint("connectDevice event  $event");
-      if (count > 0 && event == BluetoothDeviceState.disconnected) {
-        llPrint("connectDevice 连接失败");
-        return;
-      } else if (event == BluetoothDeviceState.disconnected) {
-        device.connect();
-      } else if (event == BluetoothDeviceState.connected) {
-        llPrint("connectDevice 连接成功");
-      }
-      count++;
-    });
-
-    return;
-  }
-
   Future<bool> _ensureConnected() async {
     final device = _device;
     // 1. 检查连接状态

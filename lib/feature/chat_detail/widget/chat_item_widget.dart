@@ -25,7 +25,20 @@ class ChatItemWidget extends StatelessWidget {
           child: iconWidget(),
         );
 
-        final contentWidget = model.messageType == 'text' ? textWidget(textWidth) : voiceWidget(textWidth);
+        Widget contentWidget;
+
+        switch (model.messageType) {
+          case 'text':
+            contentWidget = textWidget(textWidth);
+            break;
+          case 'voice':
+          case 'voice_notify':
+            contentWidget = voiceWidget(textWidth);
+            break;
+          default:
+            contentWidget = textWidget(textWidth);
+            break;
+        }
 
         final padding = SizedBox(width: 10.w);
 

@@ -140,14 +140,8 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
             'messageId': messageId,
             'senderId': _currentUserId,
             'receiverId': receiverId,
-            'content': '[语音消息]', // 快速显示
             'timestamp': timestamp,
             'messageType': 'voice_notify', // 新类型
-            'voiceInfo': {
-              'duration': 0, // 时长，后续可补充
-              'size': fileSize,     // 文件大小
-              'ext': 'm4a',
-            }
           };
 
           // 立即发送通知消息
@@ -162,7 +156,7 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
               messageId: messageId,
               senderId: _currentUserId,
               receiverId: receiverId,
-              content: '[语音消息]',
+              content: localPath,
               timestamp: timestamp,
               messageType: 'voice_notify',
             ),
@@ -189,40 +183,9 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
               debugPrint('语音数据发送失败: $e');
             }
           });
-
-        } else {
-          debugPrint('MQTT voice send: file not exists: $localPath');
-          // 文件不存在，发送错误提示
-          final errorMessage = {
-            'messageId': messageId,
-            'senderId': _currentUserId,
-            'receiverId': receiverId,
-            'content': '[语音消息发送失败]',
-            'timestamp': timestamp,
-            'messageType': 'text',
-          };
-          final topic = '$_topicPrefix/user/$receiverId/messages';
-          final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(errorMessage));
-          _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-          
-          _cacheMessage(receiverId, MessageInfo.fromJson(errorMessage));
         }
       } catch (e) {
         debugPrint('MQTT voice pack failed: $e');
-        // 发送错误提示
-        final errorMessage = {
-          'messageId': messageId,
-          'senderId': _currentUserId,
-          'receiverId': receiverId,
-          'content': '[语音消息发送失败]',
-          'timestamp': timestamp,
-          'messageType': 'text',
-        };
-        final topic = '$_topicPrefix/user/$receiverId/messages';
-        final builder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(errorMessage));
-        _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-        
-        _cacheMessage(receiverId, MessageInfo.fromJson(errorMessage));
       }
     } else {
       // 文本等其他类型：直接发送
@@ -264,7 +227,7 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
             messageId: map['messageId'] as String,
             senderId: map['senderId'] as String,
             receiverId: map['receiverId'] as String,
-            content: '[语音消息]', // 显示占位符
+            content: '', // 显示占位符
             timestamp: (map['timestamp'] as num).toInt(),
             messageType: 'voice_notify',
           );

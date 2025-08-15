@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:flutter/material.dart';
@@ -103,10 +101,16 @@ class ChatItemWidget extends StatelessWidget {
           },
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxWidth),
-            child: ChatBubble(
-              text: '语音消息',
-              inLeft: isUser(),
-              textBackColor: isUser() ? Colors.white : selectedTabBarItemColor,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ChatBubble(
+                  text: '语音消息',
+                  inLeft: isUser(),
+                  textBackColor: isUser() ? Colors.white : selectedTabBarItemColor,
+                ),
+                if (model.content.isEmpty) Icon(Icons.play_arrow),
+              ],
             ),
           ),
         ),

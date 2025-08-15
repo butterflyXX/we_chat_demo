@@ -136,13 +136,6 @@ class ChatManager extends _$ChatManager {
   }
 
   void _insertMessage(MessageInfo message) {
-    // 解析消息类型
-    String messageType = 'text';
-
-    if (message.messageType == 'voice') {
-      messageType = 'voice';
-    }
-
     llPrint("message: $message");
     
     _dbService.insertOrUpdateMessage(
@@ -152,7 +145,7 @@ class ChatManager extends _$ChatManager {
         senderId: message.senderId,
         receiverId: message.receiverId,
         content: message.content, // 保存原始内容
-        messageType: messageType,
+        messageType: message.messageType,
         timestamp: message.timestamp,
       ),
     );

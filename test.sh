@@ -19,7 +19,7 @@ PGYER_INSTALL_TYPE="1"        # 安装类型：固定为1=公开安装
 PGYER_INSTALL_DATE="4"        # 安装时间限制：固定为4=永久
 
 # 飞书群配置
-FEISHU_WEBHOOK_URL="https://open.feishu.cn/open-apis/bot/v2/hook/f47621f7-3cb6-4ffa-a2b0-0a51e7891a02"
+FEISHU_WEBHOOK_URL="https://open.feishu.cn/open-apis/bot/v2/hook/03937c5e-66d1-47b6-8e75-93eaf9b4d19c"
 FEISHU_BOT_NAME="构建机器人"
 
 # 应用信息

@@ -7,15 +7,8 @@ set -euo pipefail
 
 # 极简 Jenkins/Shell 脚本：Flutter iOS 打 development 包（自动签名）
 # 仅需设置 DEVELOPMENT_TEAM（Apple Developer Team ID）
-# 可选：FLUTTER_CHANNEL（默认 stable）
 
-FLUTTER_CHANNEL="${FLUTTER_CHANNEL:-stable}"
-DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
-
-if [[ -z "$DEVELOPMENT_TEAM" ]]; then
-  echo "[ERROR] 请导出环境变量 DEVELOPMENT_TEAM=你的TeamID (例如: ABCDE12345)" >&2
-  exit 1
-fi
+DEVELOPMENT_TEAM="QGYHTE2J6P"
 
 echo "[1/4] 环境与依赖检查"
 if ! command -v flutter >/dev/null 2>&1; then

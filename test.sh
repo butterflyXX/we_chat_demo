@@ -194,60 +194,60 @@ read_version_info() {
 echo "🚀 开始构建流程..."
 BUILD_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
-# 读取版本信息
-read_version_info
+# # 读取版本信息
+# read_version_info
 
-echo "[1/5] 环境与依赖检查"
-if ! command -v flutter >/dev/null 2>&1; then
-  echo "[ERROR] 未检测到 flutter"
-  send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 Flutter 环境\n• 请检查 Flutter 是否正确安装" "red"
-  exit 1
-fi
-flutter --version
+# echo "[1/5] 环境与依赖检查"
+# if ! command -v flutter >/dev/null 2>&1; then
+#   echo "[ERROR] 未检测到 flutter"
+#   send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 Flutter 环境\n• 请检查 Flutter 是否正确安装" "red"
+#   exit 1
+# fi
+# flutter --version
 
-# CocoaPods（节点若已装可跳过）
-if ! command -v pod >/dev/null 2>&1; then
-  echo "[ERROR] 未检测到 cocoapods，请先在构建机安装：sudo gem install cocoapods" >&2
-  send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 CocoaPods\n• 请执行：sudo gem install cocoapods" "red"
-  exit 1
-fi
+# # CocoaPods（节点若已装可跳过）
+# if ! command -v pod >/dev/null 2>&1; then
+#   echo "[ERROR] 未检测到 cocoapods，请先在构建机安装：sudo gem install cocoapods" >&2
+#   send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 CocoaPods\n• 请执行：sudo gem install cocoapods" "red"
+#   exit 1
+# fi
 
-echo "[2/5] 获取依赖"
-flutter pub get
-pushd ios >/dev/null
-pod install --verbose
-popd >/dev/null
+# echo "[2/5] 获取依赖"
+# flutter pub get
+# pushd ios >/dev/null
+# pod install --verbose
+# popd >/dev/null
 
-echo "[3/5] 生成导出配置 (ExportOptions.plist)"
-EXPORT_PLIST="ios/ExportOptions.plist"
-cat > "$EXPORT_PLIST" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key>
-  <string>development</string>
-  <key>signingStyle</key>
-  <string>automatic</string>
-  <key>teamID</key>
-  <string>QGYHTE2J6P</string>
-  <key>destination</key>
-  <string>export</string>
-  <key>stripSwiftSymbols</key>
-  <true/>
-  <key>compileBitcode</key>
-  <false/>
-</dict>
-</plist>
-EOF
+# echo "[3/5] 生成导出配置 (ExportOptions.plist)"
+# EXPORT_PLIST="ios/ExportOptions.plist"
+# cat > "$EXPORT_PLIST" <<EOF
+# <?xml version="1.0" encoding="UTF-8"?>
+# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+# <plist version="1.0">
+# <dict>
+#   <key>method</key>
+#   <string>development</string>
+#   <key>signingStyle</key>
+#   <string>automatic</string>
+#   <key>teamID</key>
+#   <string>QGYHTE2J6P</string>
+#   <key>destination</key>
+#   <string>export</string>
+#   <key>stripSwiftSymbols</key>
+#   <true/>
+#   <key>compileBitcode</key>
+#   <false/>
+# </dict>
+# </plist>
+# EOF
 
-echo "[4/5] 构建 IPA (development)"
-# 使用 Release 配置 + development 导出方式，Xcode 自动签名
-# 若工程未开启自动签名，请在 Xcode 打开 Runner 工程 -> Signing & Capabilities 启用
-flutter clean
-flutter build ipa \
-  --export-options-plist="$EXPORT_PLIST" \
-  --release
+# echo "[4/5] 构建 IPA (development)"
+# # 使用 Release 配置 + development 导出方式，Xcode 自动签名
+# # 若工程未开启自动签名，请在 Xcode 打开 Runner 工程 -> Signing & Capabilities 启用
+# flutter clean
+# flutter build ipa \
+#   --export-options-plist="$EXPORT_PLIST" \
+#   --release
 
 IPA_DIR="build/ios/ipa"
 echo "[SUCCESS] 导出完成：$IPA_DIR"
@@ -425,8 +425,7 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
 done
 
 echo "🎉 构建流程完成！"
-echo "  - IPA 文件: $IPA_FILE"
-echo "  - 构建时间: $BUILD_START_TIME -> $(date '+%Y-%m-%d %H:%M:%S')"
+# echo "  - 构建时间: $BUILD_START_TIME -> $(date '+%Y-%m-%d %H:%M:%S')"
 
 # ==================== 使用说明 ====================
 echo ""

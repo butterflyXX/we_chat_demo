@@ -9,24 +9,21 @@ set -euo pipefail
 
 # ==================== 配置区域 ====================
 # 蒲公英配置
-PGYER_API_KEY="your_pgyer_api_key_here"
-PGYER_USER_KEY="your_pgyer_user_key_here"
-PGYER_APP_ID="your_pgyer_app_id_here"
+PGYER_API_KEY="b31a814e617527da3303898b92b779a8"
 
 # 蒲公英上传配置
-PGYER_BUILD_NAME=""           # 构建名称，留空则自动生成
-PGYER_BUILD_PASSWORD=""       # 安装密码，留空则无密码
-PGYER_BUILD_DESCRIPTION=""    # 构建描述，留空则自动生成
-PGYER_CHANNEL_SHORTCUT="default"  # 渠道标识，默认default
+PGYER_BUILD_NAME="LEION"           # 构建名称，留空则自动生成
+PGYER_BUILD_DESCRIPTION="LEION"    # 构建描述，留空则自动生成
+PGYER_CHANNEL_SHORTCUT="iOS"  # 渠道标识，默认default
 PGYER_INSTALL_TYPE="1"        # 安装类型：固定为1=公开安装
 PGYER_INSTALL_DATE="4"        # 安装时间限制：固定为4=永久
 
 # 飞书群配置
-FEISHU_WEBHOOK_URL="your_feishu_webhook_url_here"
+FEISHU_WEBHOOK_URL="https://open.feishu.cn/open-apis/bot/v2/hook/f47621f7-3cb6-4ffa-a2b0-0a51e7891a02"
 FEISHU_BOT_NAME="构建机器人"
 
 # 应用信息
-APP_NAME="Courier Mobile"
+APP_NAME="LEION"
 APP_VERSION="1.0.0"  # 可从 pubspec.yaml 读取
 BUILD_NUMBER="1"      # 可从 pubspec.yaml 读取
 
@@ -76,36 +73,29 @@ send_feishu_notification() {
 upload_to_pgyer() {
     local ipa_path="$1"
     
-    if [ -z "$PGYER_API_KEY" ] || [ "$PGYER_API_KEY" = "your_pgyer_api_key_here" ]; then
-        echo "[WARN] 蒲公英配置未设置，跳过上传"
-        return 0
-    fi
-    
     echo "[INFO] 开始上传到蒲公英..."
     
     # 构建上传参数 - 使用最新的API 2.0接口
     local upload_url="https://www.pgyer.com/apiv2/app/upload"
     
     # 构建名称：优先使用配置，否则自动生成
-    local build_name="${PGYER_BUILD_NAME:-${APP_NAME}_${APP_VERSION}_${BUILD_NUMBER}}"
+    local build_name=$PGYER_BUILD_NAME
     
     # 安装类型和密码
-    local build_install_type="${PGYER_INSTALL_TYPE:-1}"
-    local build_password="${PGYER_BUILD_PASSWORD:-}"
+    local build_install_type=$PGYER_INSTALL_TYPE
     
     # 构建描述：优先使用配置，否则自动生成
-    local build_update_description="${PGYER_BUILD_DESCRIPTION:-自动构建版本 ${APP_VERSION} (${BUILD_NUMBER})}"
+    local build_update_description=$PGYER_BUILD_DESCRIPTION
     
     # 渠道和安装时间限制
-    local build_channel_shortcut="${PGYER_CHANNEL_SHORTCUT:-default}"
-    local build_install_date="${PGYER_INSTALL_DATE:-2}"
+    local build_channel_shortcut=$PGYER_CHANNEL_SHORTCUT
+    local build_install_date=$PGYER_INSTALL_DATE
     
     # 上传到蒲公英 - 使用API 2.0格式
     local response=$(curl -s -F "file=@$ipa_path" \
         -F "_api_key=$PGYER_API_KEY" \
         -F "buildName=$build_name" \
         -F "buildInstallType=$build_install_type" \
-        -F "buildPassword=$build_password" \
         -F "buildUpdateDescription=$build_update_description" \
         -F "buildChannelShortcut=$build_channel_shortcut" \
         -F "buildInstallDate=$build_install_date" \
@@ -207,14 +197,6 @@ validate_pgyer_config() {
     if [ -z "$PGYER_API_KEY" ] || [ "$PGYER_API_KEY" = "your_pgyer_api_key_here" ]; then
         echo "[WARN] 蒲公英 API Key 未配置，将跳过上传"
         return 1
-    fi
-    
-    # 验证安装类型
-    if [ "$PGYER_INSTALL_TYPE" = "2" ] && [ -z "$PGYER_BUILD_PASSWORD" ]; then
-        echo "[WARN] 安装类型为密码安装，但未设置安装密码"
-        echo "[INFO] 将自动生成随机密码"
-        PGYER_BUILD_PASSWORD=$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-8)
-        echo "  - 生成的密码: $PGYER_BUILD_PASSWORD"
     fi
     
     echo "[INFO] 蒲公英配置验证通过"

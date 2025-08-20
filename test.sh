@@ -69,116 +69,6 @@ send_feishu_notification() {
     fi
 }
 
-# 蒲公英上传函数
-upload_to_pgyer() {
-    local ipa_path="$1"
-    
-    echo "[INFO] 开始上传到蒲公英..."
-    
-    # 构建上传参数 - 使用最新的API 2.0接口
-    local upload_url="https://www.pgyer.com/apiv2/app/upload"
-    
-    # 构建名称：优先使用配置，否则自动生成
-    local build_name=$PGYER_BUILD_NAME
-    
-    # 安装类型和密码
-    local build_install_type=$PGYER_INSTALL_TYPE
-    
-    # 构建描述：优先使用配置，否则自动生成
-    local build_update_description=$PGYER_BUILD_DESCRIPTION
-    
-    # 渠道和安装时间限制
-    local build_channel_shortcut=$PGYER_CHANNEL_SHORTCUT
-    local build_install_date=$PGYER_INSTALL_DATE
-    
-    # 上传到蒲公英 - 使用API 2.0格式
-    local response=$(curl -s -F "file=@$ipa_path" \
-        -F "_api_key=$PGYER_API_KEY" \
-        -F "buildName=$build_name" \
-        -F "buildInstallType=$build_install_type" \
-        -F "buildUpdateDescription=$build_update_description" \
-        -F "buildChannelShortcut=$build_channel_shortcut" \
-        -F "buildInstallDate=$build_install_date" \
-        "$upload_url")
-    
-    # 解析响应 - 根据API 2.0响应格式
-    local code=$(echo "$response" | grep -o '"code":[0-9]*' | cut -d':' -f2)
-    local message=$(echo "$response" | grep -o '"message":"[^"]*"' | cut -d'"' -f4)
-    
-    if [ "$code" = "0" ]; then
-        # 解析成功响应的详细信息
-        local data=$(echo "$response" | grep -o '"data":{[^}]*}' | sed 's/"data":{//' | sed 's/}$//')
-        
-        # 提取关键信息
-        local build_key=$(echo "$data" | grep -o '"buildKey":"[^"]*"' | cut -d'"' -f4)
-        local build_type=$(echo "$data" | grep -o '"buildType":"[^"]*"' | cut -d'"' -f4)
-        local build_is_forced=$(echo "$data" | grep -o '"buildIsFirst":"[^"]*"' | cut -d'"' -f4)
-        local build_is_lastest=$(echo "$data" | grep -o '"buildIsLastest":"[^"]*"' | cut -d'"' -f4)
-        local build_file_size=$(echo "$data" | grep -o '"buildFileSize":"[^"]*"' | cut -d'"' -f4)
-        local build_name=$(echo "$data" | grep -o '"buildName":"[^"]*"' | cut -d'"' -f4)
-        local build_version=$(echo "$data" | grep -o '"buildVersion":"[^"]*"' | cut -d'"' -f4)
-        local build_version_no=$(echo "$data" | grep -o '"buildVersionNo":"[^"]*"' | cut -d'"' -f4)
-        local build_build_version=$(echo "$data" | grep -o '"buildBuildVersion":"[^"]*"' | cut -d'"' -f4)
-        local build_identifier=$(echo "$data" | grep -o '"buildIdentifier":"[^"]*"' | cut -d'"' -f4)
-        local build_icon=$(echo "$data" | grep -o '"buildIcon":"[^"]*"' | cut -d'"' -f4)
-        local build_description=$(echo "$data" | grep -o '"buildDescription":"[^"]*"' | cut -d'"' -f4)
-        local build_update_description=$(echo "$data" | grep -o '"buildUpdateDescription":"[^"]*"' | cut -d'"' -f4)
-        local build_screen_shot=$(echo "$data" | grep -o '"buildScreenShot":"[^"]*"' | cut -d'"' -f4)
-        local build_shortcut_url=$(echo "$data" | grep -o '"buildShortcutUrl":"[^"]*"' | cut -d'"' -f4)
-        local build_created=$(echo "$data" | grep -o '"buildCreated":"[^"]*"' | cut -d'"' -f4)
-        local build_updated=$(echo "$data" | grep -o '"buildUpdated":"[^"]*"' | cut -d'"' -f4)
-        local build_QR_codeURL=$(echo "$data" | grep -o '"buildQRCodeURL":"[^"]*"' | cut -d'"' -f4)
-        
-        echo "[SUCCESS] 蒲公英上传成功！"
-        echo "  - 应用名称: $build_name"
-        echo "  - 版本号: $build_version ($build_version_no)"
-        echo "  - 构建版本: $build_build_version"
-        echo "  - 文件大小: $build_file_size"
-        echo "  - 下载链接: https://www.pgyer.com/$build_shortcut_url"
-        echo "  - 二维码: $build_QR_codeURL"
-        
-        # 发送成功通知到飞书
-        local success_content="**🎉 构建成功！**\n\n"\
-"**应用信息：**\n"\
-"• 应用名称：$build_name\n"\
-"• 版本号：$build_version ($build_version_no)\n"\
-"• 构建版本：$build_build_version\n"\
-"• 文件大小：$build_file_size\n\n"\
-"**下载信息：**\n"\
-"• 下载链接：[点击下载](https://www.pgyer.com/$build_shortcut_url)\n"\
-"• 二维码：[查看二维码]($build_QR_codeURL)\n\n"\
-"**构建时间：**\n"\
-"• 开始时间：$BUILD_START_TIME\n"\
-"• 完成时间：$(date '+%Y-%m-%d %H:%M:%S')\n"\
-"• 构建环境：$(uname -s) $(uname -m)"
-        
-        send_feishu_notification "✅ 构建成功 - $APP_NAME" "$success_content" "green"
-        
-        return 0
-    else
-        echo "[ERROR] 蒲公英上传失败: $message"
-        echo "[ERROR] 响应内容: $response"
-        
-        # 发送失败通知到飞书
-        local error_content="**❌ 构建失败！**\n\n"\
-"**错误信息：**\n"\
-"• 蒲公英上传失败\n"\
-"• 错误代码：$code\n"\
-"• 错误描述：$message\n\n"\
-"**构建信息：**\n"\
-"• 应用名称：$APP_NAME\n"\
-"• 版本号：$APP_VERSION\n"\
-"• 构建编号：$BUILD_NUMBER\n\n"\
-"**时间信息：**\n"\
-"• 开始时间：$BUILD_START_TIME\n"\
-"• 失败时间：$(date '+%Y-%m-%d %H:%M:%S')"
-        
-        send_feishu_notification "❌ 构建失败 - $APP_NAME" "$error_content" "red"
-        
-        return 1
-    fi
-}
-
 # 读取版本信息
 read_version_info() {
     if [ -f "pubspec.yaml" ]; then
@@ -194,60 +84,58 @@ read_version_info() {
 echo "🚀 开始构建流程..."
 BUILD_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
-# # 读取版本信息
-# read_version_info
+# 读取版本信息
+read_version_info
 
-# echo "[1/5] 环境与依赖检查"
-# if ! command -v flutter >/dev/null 2>&1; then
-#   echo "[ERROR] 未检测到 flutter"
-#   send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 Flutter 环境\n• 请检查 Flutter 是否正确安装" "red"
-#   exit 1
-# fi
-# flutter --version
+echo "[1/5] 环境与依赖检查"
+if ! command -v flutter >/dev/null 2>&1; then
+  echo "[ERROR] 未检测到 flutter"
+  exit 1
+fi
+flutter --version
 
-# # CocoaPods（节点若已装可跳过）
-# if ! command -v pod >/dev/null 2>&1; then
-#   echo "[ERROR] 未检测到 cocoapods，请先在构建机安装：sudo gem install cocoapods" >&2
-#   send_feishu_notification "❌ 构建失败 - $APP_NAME" "**环境检查失败**\n\n• 未检测到 CocoaPods\n• 请执行：sudo gem install cocoapods" "red"
-#   exit 1
-# fi
+# CocoaPods（节点若已装可跳过）
+if ! command -v pod >/dev/null 2>&1; then
+  echo "[ERROR] 未检测到 cocoapods，请先在构建机安装：sudo gem install cocoapods" >&2
+  exit 1
+fi
 
-# echo "[2/5] 获取依赖"
-# flutter pub get
-# pushd ios >/dev/null
-# pod install --verbose
-# popd >/dev/null
+echo "[2/5] 获取依赖"
+flutter pub get
+pushd ios >/dev/null
+pod install --verbose
+popd >/dev/null
 
-# echo "[3/5] 生成导出配置 (ExportOptions.plist)"
-# EXPORT_PLIST="ios/ExportOptions.plist"
-# cat > "$EXPORT_PLIST" <<EOF
-# <?xml version="1.0" encoding="UTF-8"?>
-# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-# <plist version="1.0">
-# <dict>
-#   <key>method</key>
-#   <string>development</string>
-#   <key>signingStyle</key>
-#   <string>automatic</string>
-#   <key>teamID</key>
-#   <string>QGYHTE2J6P</string>
-#   <key>destination</key>
-#   <string>export</string>
-#   <key>stripSwiftSymbols</key>
-#   <true/>
-#   <key>compileBitcode</key>
-#   <false/>
-# </dict>
-# </plist>
-# EOF
+echo "[3/5] 生成导出配置 (ExportOptions.plist)"
+EXPORT_PLIST="ios/ExportOptions.plist"
+cat > "$EXPORT_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>development</string>
+  <key>signingStyle</key>
+  <string>automatic</string>
+  <key>teamID</key>
+  <string>QGYHTE2J6P</string>
+  <key>destination</key>
+  <string>export</string>
+  <key>stripSwiftSymbols</key>
+  <true/>
+  <key>compileBitcode</key>
+  <false/>
+</dict>
+</plist>
+EOF
 
-# echo "[4/5] 构建 IPA (development)"
-# # 使用 Release 配置 + development 导出方式，Xcode 自动签名
-# # 若工程未开启自动签名，请在 Xcode 打开 Runner 工程 -> Signing & Capabilities 启用
-# flutter clean
-# flutter build ipa \
-#   --export-options-plist="$EXPORT_PLIST" \
-#   --release
+echo "[4/5] 构建 IPA (development)"
+# 使用 Release 配置 + development 导出方式，Xcode 自动签名
+# 若工程未开启自动签名，请在 Xcode 打开 Runner 工程 -> Signing & Capabilities 启用
+flutter clean
+flutter build ipa \
+  --export-options-plist="$EXPORT_PLIST" \
+  --release
 
 IPA_DIR="build/ios/ipa"
 echo "[SUCCESS] 导出完成：$IPA_DIR"
@@ -263,7 +151,10 @@ echo "[5/5] 上传到蒲公英"
 PGYER_API_KEY="${PGYER_API_KEY:-}"
 PGYER_INSTALL_TYPE="${PGYER_INSTALL_TYPE:-1}"
 PGYER_PASSWORD="${PGYER_PASSWORD:-}"
-PGYER_DESC="${PGYER_DESC:-Auto upload at $(date '+%Y-%m-%d %H:%M:%S')}"
+# 使用分支名和最近一次commit信息作为描述
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown-branch")
+GIT_COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null | head -n 1 | tr -d '\n' || echo "no-commit-msg")
+PGYER_DESC="${PGYER_DESC:-分支: $GIT_BRANCH, 提交: $GIT_COMMIT_MSG}"
 
 if [[ -z "$PGYER_API_KEY" ]]; then
   echo "[WARN] 未设置 PGYER_API_KEY，跳过上传蒲公英。"
@@ -346,10 +237,28 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
       echo "[SUCCESS] 蒲公英上传成功！"
       # 提取下载链接
       DOWNLOAD_URL=$(echo "$RESPONSE_BODY" | grep -o '"buildQRCodeURL":"[^"]*"' | cut -d'"' -f4 || echo "")
+      BUILD_SHORTCUT_URL=$(echo "$RESPONSE_BODY" | grep -o '"buildShortcutUrl":"[^"]*"' | cut -d'"' -f4 || echo "")
+      if [[ -n "$BUILD_SHORTCUT_URL" ]]; then
+        DOWNLOAD_PAGE_URL="https://www.pgyer.com/$BUILD_SHORTCUT_URL"
+      else
+        DOWNLOAD_PAGE_URL="$DOWNLOAD_URL"
+      fi
       if [[ -n "$DOWNLOAD_URL" ]]; then
         echo "[INFO] 下载链接: $DOWNLOAD_URL"
       fi
       echo "[SUCCESS] 蒲公英上传完成，结果已保存：$IPA_DIR/pgyer_upload_result.json"
+      # 仅在成功时发送飞书通知
+      SUCCESS_CONTENT="**🎉 构建成功！**\n\n"\
+"**应用信息：**\n"\
+"• 应用名称：$APP_NAME\n"\
+"• 版本号：$APP_VERSION ($BUILD_NUMBER)\n\n"\
+"**下载信息：**\n"\
+"• 下载链接：[点击下载]($DOWNLOAD_PAGE_URL)\n"\
+"• 描述：$PGYER_DESC\n\n"\
+"**构建时间：**\n"\
+"• 开始时间：$BUILD_START_TIME\n"\
+"• 完成时间：$(date '+%Y-%m-%d %H:%M:%S')"
+      send_feishu_notification "✅ 构建成功 - $APP_NAME" "$SUCCESS_CONTENT" "green"
       break
     else
       echo "[ERROR] 蒲公英上传失败"

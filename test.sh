@@ -6,9 +6,6 @@ export RUBYOPT="-E UTF-8:UTF-8"
 set -euo pipefail
 
 # 极简 Jenkins/Shell 脚本：Flutter iOS 打 development 包（自动签名）
-# 仅需设置 DEVELOPMENT_TEAM（Apple Developer Team ID）
-
-DEVELOPMENT_TEAM="QGYHTE2J6P"
 
 echo "[1/4] 环境与依赖检查"
 if ! command -v flutter >/dev/null 2>&1; then
@@ -41,7 +38,7 @@ cat > "$EXPORT_PLIST" <<EOF
   <key>signingStyle</key>
   <string>automatic</string>
   <key>teamID</key>
-  <string>${DEVELOPMENT_TEAM}</string>
+  <string>QGYHTE2J6P</string>
   <key>destination</key>
   <string>export</string>
   <key>stripSwiftSymbols</key>

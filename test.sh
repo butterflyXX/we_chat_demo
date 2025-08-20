@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export RUBYOPT="-E UTF-8:UTF-8"
 set -euo pipefail
 
 # 极简 Jenkins/Shell 脚本：Flutter iOS 打 development 包（自动签名）
-# teamID 已写死为 QGYHTE2J6P
+# 仅需设置 DEVELOPMENT_TEAM（Apple Developer Team ID）
 # 可选：FLUTTER_CHANNEL（默认 stable）
 
 FLUTTER_CHANNEL="${FLUTTER_CHANNEL:-stable}"
-DEVELOPMENT_TEAM="QGYHTE2J6P"
+DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
+
+if [[ -z "$DEVELOPMENT_TEAM" ]]; then
+  echo "[ERROR] 请导出环境变量 DEVELOPMENT_TEAM=你的TeamID (例如: ABCDE12345)" >&2
+  exit 1
+fi
 
 echo "[1/4] 环境与依赖检查"
 if ! command -v flutter >/dev/null 2>&1; then
-  echo "[INFO] 未检测到 flutter，开始安装到 ~/flutter"
-  git clone https://github.com/flutter/flutter.git -b "$FLUTTER_CHANNEL" "$HOME/flutter"
-  export PATH="$HOME/flutter/bin:$PATH"
+  echo "[INFO] 未检测到 flutter"
+  exit 1
 fi
 flutter --version
 

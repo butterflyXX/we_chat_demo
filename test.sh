@@ -152,8 +152,22 @@ PGYER_API_KEY="${PGYER_API_KEY:-}"
 PGYER_INSTALL_TYPE="${PGYER_INSTALL_TYPE:-1}"
 PGYER_PASSWORD="${PGYER_PASSWORD:-}"
 # 使用分支名和最近一次commit信息作为描述
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown-branch")
-GIT_COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null | head -n 1 | tr -d '\n' || echo "no-commit-msg")
+# 优先使用 Jenkins 环境变量，其次从 git 安全探测
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+CANDIDATE_BRANCH="${BRANCH_NAME:-${GIT_BRANCH:-${GIT_LOCAL_BRANCH:-${CHANGE_BRANCH:-}}}}"
+if [[ -n "$CANDIDATE_BRANCH" ]]; then
+  GIT_BRANCH="$CANDIDATE_BRANCH"
+else
+  GIT_BRANCH=$(git -C "$REPO_ROOT" symbolic-ref --short -q HEAD 2>/dev/null || true)
+  if [[ -z "$GIT_BRANCH" || "$GIT_BRANCH" == "HEAD" ]]; then
+    GIT_BRANCH=$(git -C "$REPO_ROOT" for-each-ref --format='%(refname:short)' --contains HEAD refs/heads refs/remotes 2>/dev/null | head -n1 | sed 's#^origin/##' || true)
+  fi
+  if [[ -z "$GIT_BRANCH" ]]; then
+    SHORT_COMMIT=$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    GIT_BRANCH="detached-$SHORT_COMMIT"
+  fi
+fi
+GIT_COMMIT_MSG=$(git -C "$REPO_ROOT" log -1 --pretty=%s 2>/dev/null | tr -d '\n' || echo "no-commit-msg")
 PGYER_DESC="${PGYER_DESC:-分支: $GIT_BRANCH, 提交: $GIT_COMMIT_MSG}"
 
 if [[ -z "$PGYER_API_KEY" ]]; then

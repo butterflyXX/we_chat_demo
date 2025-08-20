@@ -264,7 +264,7 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
       # 仅在成功时发送飞书通知
       SUCCESS_CONTENT="**🎉 构建成功！**\n\n"\
 "**应用信息：**\n"\
-"• 应用名称：$APP_NAME\n"\
+"• 应用名称：$APP_NAME（iOS）\n"\
 "• 版本号：$APP_VERSION ($BUILD_NUMBER)\n\n"\
 "**下载信息：**\n"\
 "• 下载链接：[点击下载]($DOWNLOAD_PAGE_URL)\n"\

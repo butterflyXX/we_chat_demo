@@ -24,8 +24,8 @@ FEISHU_BOT_NAME="构建机器人"
 
 # 应用信息
 APP_NAME="LEION"
-APP_VERSION="1.0.0"  # 可从 pubspec.yaml 读取
-BUILD_NUMBER="1"      # 可从 pubspec.yaml 读取
+APP_VERSION="1.0.0"
+BUILD_NUMBER="1"
 
 # ==================== 函数定义 ====================
 # 飞书通知函数
@@ -190,31 +190,12 @@ read_version_info() {
     fi
 }
 
-# 验证蒲公英配置
-validate_pgyer_config() {
-    echo "[INFO] 验证蒲公英配置..."
-    
-    if [ -z "$PGYER_API_KEY" ] || [ "$PGYER_API_KEY" = "your_pgyer_api_key_here" ]; then
-        echo "[WARN] 蒲公英 API Key 未配置，将跳过上传"
-        return 1
-    fi
-    
-    echo "[INFO] 蒲公英配置验证通过"
-    return 0
-}
-
 # ==================== 主流程 ====================
 echo "🚀 开始构建流程..."
 BUILD_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
 # 读取版本信息
 read_version_info
-
-# 验证蒲公英配置
-validate_pgyer_config
-
-# 发送开始通知
-send_feishu_notification "🔄 构建开始 - $APP_NAME" "**构建开始**\n\n• 应用：$APP_NAME\n• 版本：$APP_VERSION\n• 构建号：$BUILD_NUMBER\n• 开始时间：$BUILD_START_TIME" "blue"
 
 echo "[1/5] 环境与依赖检查"
 if ! command -v flutter >/dev/null 2>&1; then
@@ -272,16 +253,176 @@ IPA_DIR="build/ios/ipa"
 echo "[SUCCESS] 导出完成：$IPA_DIR"
 ls -lh "$IPA_DIR" || true
 
-# 查找 IPA 文件
-IPA_FILE=$(find "$IPA_DIR" -name "*.ipa" | head -1)
-if [ -z "$IPA_FILE" ]; then
-    echo "[ERROR] 未找到 IPA 文件"
-    send_feishu_notification "❌ 构建失败 - $APP_NAME" "**构建失败**\n\n• IPA 文件生成失败\n• 请检查构建日志" "red"
-    exit 1
+echo "[5/5] 上传到蒲公英"
+# 环境变量：
+#  - PGYER_API_KEY        (必填) - 蒲公英 API Key
+#  - PGYER_INSTALL_TYPE   1公开 / 2密码 / 3邀请 (默认1)
+#  - PGYER_PASSWORD       当 INSTALL_TYPE=2 时必填
+#  - PGYER_DESC           更新说明（可选）
+
+PGYER_API_KEY="${PGYER_API_KEY:-}"
+PGYER_INSTALL_TYPE="${PGYER_INSTALL_TYPE:-1}"
+PGYER_PASSWORD="${PGYER_PASSWORD:-}"
+PGYER_DESC="${PGYER_DESC:-Auto upload at $(date '+%Y-%m-%d %H:%M:%S')}"
+
+if [[ -z "$PGYER_API_KEY" ]]; then
+  echo "[WARN] 未设置 PGYER_API_KEY，跳过上传蒲公英。"
+  exit 0
 fi
 
-echo "[5/5] 上传到蒲公英"
-upload_to_pgyer "$IPA_FILE"
+# 查找 IPA 文件
+echo "[INFO] 查找 IPA 文件..."
+find "$IPA_DIR" -name "*.ipa" -type f 2>/dev/null | head -n 5 || true
+
+IPA_PATH=$(find "$IPA_DIR" -name "*.ipa" -type f 2>/dev/null | head -n 1 || true)
+if [[ -z "$IPA_PATH" ]]; then
+  echo "[ERROR] 未找到 IPA 文件，无法上传蒲公英。"
+  echo "[DEBUG] 当前目录: $(pwd)"
+  echo "[DEBUG] IPA目录内容:"
+  ls -la "$IPA_DIR" || true
+  exit 1
+fi
+
+echo "[INFO] 找到 IPA 文件: $IPA_PATH"
+echo "[INFO] 文件大小: $(ls -lh "$IPA_PATH" | awk '{print $5}')"
+
+# 调试信息
+echo "[DEBUG] API Key: ${PGYER_API_KEY:0:8}..."
+echo "[DEBUG] Install Type: $PGYER_INSTALL_TYPE"
+echo "[DEBUG] Description: $PGYER_DESC"
+
+# 根据蒲公英官方GitHub示例构建请求
+PGY_UPLOAD_URL="https://www.pgyer.com/apiv2/app/upload"
+
+# 构建 multipart/form-data 请求 - 使用官方推荐格式
+echo "[INFO] 开始上传到蒲公英..."
+echo "[DEBUG] 上传URL: $PGY_UPLOAD_URL"
+
+# 根据官方示例，构建正确的参数
+CURL_PARAMS=(
+  -F "file=@$IPA_PATH"
+  -F "_api_key=$PGYER_API_KEY"
+  -F "buildInstallType=$PGYER_INSTALL_TYPE"
+  -F "buildUpdateDescription=$PGYER_DESC"
+)
+
+# 只有当安装类型为密码安装时才添加密码参数
+if [[ "$PGYER_INSTALL_TYPE" == "2" && -n "$PGYER_PASSWORD" ]]; then
+  CURL_PARAMS+=( -F "buildPassword=$PGYER_PASSWORD" )
+fi
+
+# 使用 curl 上传，确保参数名称正确
+echo "[INFO] 执行上传命令..."
+echo "[DEBUG] curl 参数: ${CURL_PARAMS[*]}"
+
+# 根据官方示例，添加详细的错误处理和重试机制
+MAX_RETRIES=3
+RETRY_COUNT=0
+
+while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
+  echo "[INFO] 尝试上传 (第 $((RETRY_COUNT + 1)) 次)..."
+  
+  CURL_RESPONSE=$(curl -sSfL \
+    -w "HTTP_STATUS:%{http_code}" \
+    -m 300 \
+    "${CURL_PARAMS[@]}" \
+    "$PGY_UPLOAD_URL")
+  
+  CURL_CODE=$?
+  
+  # 分离HTTP状态码和响应内容
+  HTTP_STATUS=$(echo "$CURL_RESPONSE" | grep -o "HTTP_STATUS:[0-9]*" | cut -d':' -f2)
+  RESPONSE_BODY=$(echo "$CURL_RESPONSE" | sed 's/HTTP_STATUS:[0-9]*//')
+  
+  # 保存响应到文件
+  echo "$RESPONSE_BODY" > "$IPA_DIR/pgyer_upload_result.json"
+  
+  echo "[DEBUG] HTTP状态码: $HTTP_STATUS"
+  echo "[DEBUG] 响应内容: $RESPONSE_BODY"
+  
+  if [[ $CURL_CODE -eq 0 && "$HTTP_STATUS" == "200" ]]; then
+    # 检查响应中的错误码
+    if echo "$RESPONSE_BODY" | grep -q '"code":0'; then
+      echo "[SUCCESS] 蒲公英上传成功！"
+      # 提取下载链接
+      DOWNLOAD_URL=$(echo "$RESPONSE_BODY" | grep -o '"buildQRCodeURL":"[^"]*"' | cut -d'"' -f4 || echo "")
+      if [[ -n "$DOWNLOAD_URL" ]]; then
+        echo "[INFO] 下载链接: $DOWNLOAD_URL"
+      fi
+      echo "[SUCCESS] 蒲公英上传完成，结果已保存：$IPA_DIR/pgyer_upload_result.json"
+      break
+    else
+      echo "[ERROR] 蒲公英上传失败"
+      echo "[ERROR] 错误信息: $RESPONSE_BODY"
+      
+      # 解析具体错误码
+      ERROR_CODE=$(echo "$RESPONSE_BODY" | grep -o '"code":[0-9]*' | cut -d':' -f2 || echo "unknown")
+      ERROR_MSG=$(echo "$RESPONSE_BODY" | grep -o '"message":"[^"]*"' | cut -d'"' -f4 || echo "unknown error")
+      
+      echo "[ERROR] 错误码: $ERROR_CODE"
+      echo "[ERROR] 错误消息: $ERROR_MSG"
+      
+      # 根据蒲公英官方错误码提供解决建议
+      case $ERROR_CODE in
+        1212)
+          echo "[SUGGESTION] 错误码 1212: 渠道短链接无效，请检查短链接"
+          echo "[SUGGESTION] 解决方案："
+          echo "[SUGGESTION] 1. 先在蒲公英平台手动上传一次应用，创建应用记录"
+          echo "[SUGGESTION] 2. 确认 API Key 有上传权限"
+          echo "[SUGGESTION] 3. 检查应用状态是否正常"
+          echo "[SUGGESTION] 4. 参考官方示例：https://github.com/PGYER/upload-app-api-example"
+          ;;
+        1001)
+          echo "[SUGGESTION] 错误码 1001: API Key 无效"
+          echo "[SUGGESTION] 请检查 API Key 是否正确"
+          ;;
+        1002)
+          echo "[SUGGESTION] 错误码 1002: API Key 未找到"
+          echo "[SUGGESTION] 请检查 API Key 是否正确设置"
+          ;;
+        1003)
+          echo "[SUGGESTION] 错误码 1003: 应用不存在"
+          echo "[SUGGESTION] 请先在蒲公英平台创建应用"
+          ;;
+        1098)
+          echo "[SUGGESTION] 错误码 1098: API 请求达到每小时的上限"
+          echo "[SUGGESTION] 请稍后再试或升级账户"
+          ;;
+        1097)
+          echo "[SUGGESTION] 错误码 1097: 签名错误"
+          echo "[SUGGESTION] 请检查 IPA 文件签名是否正确"
+          ;;
+        *)
+          echo "[SUGGESTION] 未知错误码，请查看蒲公英官方文档获取更多信息"
+          echo "[SUGGESTION] 官方示例：https://github.com/PGYER/upload-app-api-example"
+          ;;
+      esac
+      
+      # 如果是可重试的错误，继续重试
+      if [[ "$ERROR_CODE" == "1098" || "$ERROR_CODE" == "1001" || "$ERROR_CODE" == "1002" ]]; then
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; then
+          echo "[INFO] 等待 10 秒后重试..."
+          sleep 10
+          continue
+        fi
+      fi
+      
+      exit 1
+    fi
+  else
+    echo "[ERROR] 网络请求失败 (curl code=$CURL_CODE, HTTP status=$HTTP_STATUS)"
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    
+    if [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; then
+      echo "[INFO] 等待 10 秒后重试..."
+      sleep 10
+    else
+      echo "[ERROR] 达到最大重试次数，上传失败"
+      exit 1
+    fi
+  fi
+done
 
 echo "🎉 构建流程完成！"
 echo "  - IPA 文件: $IPA_FILE"

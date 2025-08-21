@@ -31,6 +31,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "home_tab_contact": MessageLookupByLibrary.simpleMessage("通讯录"),
     "home_tab_find": MessageLookupByLibrary.simpleMessage("发现"),
     "home_tab_mine": MessageLookupByLibrary.simpleMessage("我"),
+    "language_settings": MessageLookupByLibrary.simpleMessage("语言设置"),
     "login_password": MessageLookupByLibrary.simpleMessage("密码"),
     "login_submit": MessageLookupByLibrary.simpleMessage("登录"),
     "login_title": MessageLookupByLibrary.simpleMessage("登录"),

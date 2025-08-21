@@ -1,7 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum KvKey<T> {
-  userInfo<String>(false);
+  userInfo<String>(false),
+  locale<String>(false);
   final bool value;
 
   const KvKey(this.value);

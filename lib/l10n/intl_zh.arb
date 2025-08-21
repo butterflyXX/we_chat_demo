@@ -11,5 +11,6 @@
   "login_username": "账号",
   "login_password": "密码",
   "login_submit": "登录",
-  "chat_input_hint": "发消息…"
+  "chat_input_hint": "发消息…",
+  "language_settings": "语言设置"
 }

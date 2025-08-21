@@ -11,5 +11,6 @@
   "login_username": "Username",
   "login_password": "Password",
   "login_submit": "Login",
-  "chat_input_hint": "Send message..."
+  "chat_input_hint": "Send message...",
+  "language_settings": "Language Settings"
 }

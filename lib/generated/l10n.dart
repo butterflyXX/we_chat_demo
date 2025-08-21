@@ -129,6 +129,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Language Settings`
+  String get language_settings {
+    return Intl.message(
+      'Language Settings',
+      name: 'language_settings',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

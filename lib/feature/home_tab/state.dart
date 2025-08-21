@@ -1,3 +1,4 @@
+import 'package:chat_demo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_demo/common/typedef.dart';
 import 'package:chat_demo/feature/contact/view.dart';
@@ -25,56 +26,11 @@ class TabBarItem {
 
 @riverpod
 class HomeBarState extends _$HomeBarState {
-  PageController controller = PageController();
-  List<TabBarItem> tabBars = [];
+  final controller = PageController();
 
   @override
   int build() {
-    initPage();
     return 0;
-  }
-
-  void initPage() {
-    tabBars.add(
-      TabBarItem(
-        icon: const Icon(LucideIcons.message_circle),
-        activeIcon: const Icon(LucideIcons.message_circle),
-        title: Home.title,
-        builder: () {
-          return const Home();
-        },
-      ),
-    );
-    tabBars.add(
-      TabBarItem(
-        icon: const Icon(LucideIcons.contact),
-        activeIcon: const Icon(LucideIcons.contact),
-        title: Contact.title,
-        builder: () {
-          return const Contact();
-        },
-      ),
-    );
-    tabBars.add(
-      TabBarItem(
-        icon: const Icon(LucideIcons.text_search),
-        activeIcon: const Icon(LucideIcons.text_search),
-        title: Find.title,
-        builder: () {
-          return const Find();
-        },
-      ),
-    );
-    tabBars.add(
-      TabBarItem(
-        icon: const Icon(LucideIcons.user),
-        activeIcon: const Icon(LucideIcons.user),
-        title: Mine.title,
-        builder: () {
-          return const Mine();
-        },
-      ),
-    );
   }
 
   void changePage(int index) {

@@ -1,7 +1,9 @@
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
+import 'package:chat_demo/common/services/locale_service.dart';
 import 'package:chat_demo/common/services/tts_service.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
 import 'package:chat_demo/common/services/logout_service.dart';
+import 'package:chat_demo/generated/l10n.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:chat_demo/service_manager.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +46,36 @@ class _MineState extends ConsumerState<Mine> {
             onTap: () async {
               final tts = serviceLocator.get<XfTtsService>();
               await tts.speak('你好，这是超拟人语音合成示例');
+            },
+          ),
+          ListTile(
+            title: Text(S.current.language_settings),
+            onTap: () async {
+              // 弹出一个底部选择框，切换中英文
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        title: const Text('简体中文'),
+                        onTap: () {
+                          ref.read(localeServiceProvider.notifier).setLocale(const Locale('zh'));
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('English'),
+                        onTap: () {
+                          ref.read(localeServiceProvider.notifier).setLocale(const Locale('en'));
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],

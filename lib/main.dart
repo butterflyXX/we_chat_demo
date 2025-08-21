@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/services/app_lifecycle_service.dart';
+import 'package:chat_demo/common/services/locale_service.dart';
 import 'package:chat_demo/service_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,21 +45,26 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     setReadProviderContext(context);
     return ScreenUtilInit(
-      child: MaterialApp.router(
-        title: 'Flutter Demo',
-        localizationsDelegates: [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-        theme: ThemeData(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          splashFactory: NoSplash.splashFactory,
-        ),
-        routerConfig: router,
+      child: Consumer(
+        builder: (context, ref, child) {
+          return MaterialApp.router(
+            title: 'Flutter Demo',
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            theme: ThemeData(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+            ),
+            locale: ref.watch(localeServiceProvider),
+            routerConfig: router,
+          );
+        },
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:chat_demo/common/navigator/navigator_manager.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/common/widget/sliver/header_sliver.dart';
 import 'package:chat_demo/feature/home/state.dart';
+import 'package:chat_demo/generated/l10n.dart';
 import 'package:chat_demo/route/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,6 @@ import 'package:chat_demo/feature/home/widget/home_item_widget.dart';
 final backWidgetProvider = AutoDisposeStateProvider((ref) => 0.0);
 
 class Home extends ConsumerStatefulWidget {
-  static const String title = "微信";
 
   const Home({super.key});
 
@@ -108,7 +108,7 @@ class _HomeState extends ConsumerState<Home>
                     },
                     child: const Icon(Icons.more_horiz),
                   ),
-                  Expanded(child: Text(Home.title)),
+                  Expanded(child: Text(S.of(context).home_tab_chat)),
                   CommonIconButton(
                     onTap: () {
                       NavigatorManager.push(AddUserRoute());

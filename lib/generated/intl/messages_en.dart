@@ -31,6 +31,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "home_tab_contact": MessageLookupByLibrary.simpleMessage("Contacts"),
     "home_tab_find": MessageLookupByLibrary.simpleMessage("Discover"),
     "home_tab_mine": MessageLookupByLibrary.simpleMessage("Me"),
+    "language_settings": MessageLookupByLibrary.simpleMessage(
+      "Language Settings",
+    ),
     "login_password": MessageLookupByLibrary.simpleMessage("Password"),
     "login_submit": MessageLookupByLibrary.simpleMessage("Login"),
     "login_title": MessageLookupByLibrary.simpleMessage("Login"),

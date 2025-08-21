@@ -7,7 +7,7 @@ part of 'mqtt_service.dart';
 // **************************************************************************
 
 String _$mqttServiceNotifierHash() =>
-    r'bce2c6c285d8a7527f2e18ccc111cc11f23535a3';
+    r'c6471fa3051a880933b932c364e828fe7c8faa7c';
 
 /// See also [MqttServiceNotifier].
 @ProviderFor(MqttServiceNotifier)

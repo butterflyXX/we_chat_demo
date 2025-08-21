@@ -3,6 +3,8 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export RUBYOPT="-E UTF-8:UTF-8"
+export PATH="$HOME/fvm/versions/3.32.8/bin:$PATH"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 set -euo pipefail
 
 # 极简 Jenkins/Shell 脚本：Flutter iOS 打 development 包（自动签名）+ 蒲公英上传 + 飞书通知

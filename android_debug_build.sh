@@ -5,87 +5,32 @@ export LANGUAGE=en_US.UTF-8
 export RUBYOPT="-E UTF-8:UTF-8"
 set -euo pipefail
 
-# 极简 Jenkins/Shell 脚本：Flutter iOS 打 development 包（自动签名）+ 蒲公英上传 + 飞书通知
+# 极简 Jenkins/Shell 脚本：Flutter Android 打 debug 包 + 蒲公英上传 + 飞书通知
 
 # ==================== 配置区域 ====================
 # 蒲公英配置
 PGYER_API_KEY="b31a814e617527da3303898b92b779a8"
 
-# 蒲公英上传配置
-PGYER_BUILD_NAME="LEION"           # 构建名称，留空则自动生成
-PGYER_BUILD_DESCRIPTION="LEION"    # 构建描述，留空则自动生成
-PGYER_CHANNEL_SHORTCUT="iOS"  # 渠道标识，默认default
-PGYER_INSTALL_TYPE="1"        # 安装类型：固定为1=公开安装
-PGYER_INSTALL_DATE="4"        # 安装时间限制：固定为4=永久
-
 # 飞书群配置
 FEISHU_WEBHOOK_URL="https://open.feishu.cn/open-apis/bot/v2/hook/03937c5e-66d1-47b6-8e75-93eaf9b4d19c"
-FEISHU_BOT_NAME="构建机器人"
 
 # 应用信息
 APP_NAME="LEION"
-APP_VERSION="1.0.0"
-BUILD_NUMBER="1"
 
 # ==================== 函数定义 ====================
 # 飞书通知函数
 send_feishu_notification() {
-    local title="$1"
-    local content="$2"
-    local color="$3"  # 绿色/红色/蓝色
-    
-    local message="{
-        \"msg_type\": \"interactive\",
-        \"card\": {
-            \"config\": {
-                \"wide_screen_mode\": true
-            },
-            \"header\": {
-                \"title\": {
-                    \"tag\": \"plain_text\",
-                    \"content\": \"$title\"
-                },
-                \"template\": \"$color\"
-            },
-            \"elements\": [
-                {
-                    \"tag\": \"div\",
-                    \"text\": {
-                        \"tag\": \"lark_md\",
-                        \"content\": \"$content\"
-                    }
-                }
-            ]
-        }
-    }"
-    
-    if [ -n "$FEISHU_WEBHOOK_URL" ] && [ "$FEISHU_WEBHOOK_URL" != "your_feishu_webhook_url_here" ]; then
-        echo "[INFO] 发送飞书通知..."
-        curl -X POST -H "Content-Type: application/json" \
-             -d "$message" \
-             "$FEISHU_WEBHOOK_URL" || echo "[WARN] 飞书通知发送失败"
+    if command -v python3 >/dev/null 2>&1; then
+        python3 scripts/notify_feishu.py --title "✅ 构建成功 - ${APP_NAME}" --content "$1" --color "green" --webhook "${FEISHU_WEBHOOK_URL:-}"
     else
-        echo "[INFO] 飞书通知未配置，跳过"
-    fi
-}
-
-# 读取版本信息
-read_version_info() {
-    if [ -f "pubspec.yaml" ]; then
-        echo "[INFO] 读取版本信息..."
-        APP_VERSION=$(grep "^version:" pubspec.yaml | sed 's/version: //' | tr -d ' ')
-        BUILD_NUMBER=$(grep "^version:" pubspec.yaml | sed 's/version: //' | tr -d ' ' | cut -d'+' -f2)
-        echo "  - 版本号: $APP_VERSION"
-        echo "  - 构建号: $BUILD_NUMBER"
+        echo "[WARN] 未找到 python3"
+        exit 1
     fi
 }
 
 # ==================== 主流程 ====================
-echo "🚀 开始构建流程..."
+echo "🚀 开始 Android Debug 构建流程..."
 BUILD_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-
-# 读取版本信息
-read_version_info
 
 echo "[1/5] 环境与依赖检查"
 if ! command -v flutter >/dev/null 2>&1; then
@@ -94,62 +39,49 @@ if ! command -v flutter >/dev/null 2>&1; then
 fi
 flutter --version
 
-# CocoaPods（节点若已装可跳过）
-if ! command -v pod >/dev/null 2>&1; then
-  echo "[ERROR] 未检测到 cocoapods，请先在构建机安装：sudo gem install cocoapods" >&2
+# 检查 Android SDK（在 set -u 下使用安全展开，避免未设置时报错）
+if [ -z "${ANDROID_HOME:-}" ]; then
+  echo "[WARN] 未设置 ANDROID_HOME 环境变量"
+  echo "[INFO] 尝试自动检测 Android SDK..."
+  if [ -d "$HOME/Library/Android/sdk" ]; then
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
+    echo "[INFO] 检测到 Android SDK: $ANDROID_HOME"
+  elif [ -d "/usr/local/android-sdk" ]; then
+    export ANDROID_HOME="/usr/local/android-sdk"
+    echo "[INFO] 检测到 Android SDK: $ANDROID_HOME"
+  else
+    echo "[ERROR] 未找到 Android SDK，请设置 ANDROID_HOME 环境变量"
+    exit 1
+  fi
+fi
+
+# 检查 Java
+if ! command -v java >/dev/null 2>&1; then
+  echo "[ERROR] 未检测到 Java"
   exit 1
 fi
+echo "[INFO] Java 版本: $(java -version 2>&1 | head -n 1)"
 
 echo "[2/5] 获取依赖"
 flutter pub get
-pushd ios >/dev/null
-pod install --verbose
-popd >/dev/null
 
-echo "[3/5] 生成导出配置 (ExportOptions.plist)"
-EXPORT_PLIST="ios/ExportOptions.plist"
-cat > "$EXPORT_PLIST" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key>
-  <string>development</string>
-  <key>signingStyle</key>
-  <string>automatic</string>
-  <key>teamID</key>
-  <string>QGYHTE2J6P</string>
-  <key>destination</key>
-  <string>export</string>
-  <key>stripSwiftSymbols</key>
-  <true/>
-  <key>compileBitcode</key>
-  <false/>
-</dict>
-</plist>
-EOF
-
-echo "[4/5] 构建 IPA (development)"
-# 使用 Release 配置 + development 导出方式，Xcode 自动签名
-# 若工程未开启自动签名，请在 Xcode 打开 Runner 工程 -> Signing & Capabilities 启用
+echo "[3/5] 清理构建缓存"
 flutter clean
-flutter build ipa \
-  --export-options-plist="$EXPORT_PLIST" \
-  --release
 
-IPA_DIR="build/ios/ipa"
-echo "[SUCCESS] 导出完成：$IPA_DIR"
-ls -lh "$IPA_DIR" || true
+echo "[4/5] 构建 APK (debug)"
+flutter build apk --debug
+
+APK_DIR="build/app/outputs/flutter-apk"
+echo "[SUCCESS] 导出完成：$APK_DIR"
+ls -lh "$APK_DIR" || true
 
 echo "[5/5] 上传到蒲公英"
 # 环境变量：
 #  - PGYER_API_KEY        (必填) - 蒲公英 API Key
-#  - PGYER_INSTALL_TYPE   1公开 / 2密码 / 3邀请 (默认1)
 #  - PGYER_PASSWORD       当 INSTALL_TYPE=2 时必填
 #  - PGYER_DESC           更新说明（可选）
 
 PGYER_API_KEY="${PGYER_API_KEY:-}"
-PGYER_INSTALL_TYPE="${PGYER_INSTALL_TYPE:-1}"
 PGYER_PASSWORD="${PGYER_PASSWORD:-}"
 # 使用分支名和最近一次commit信息作为描述
 # 优先使用 Jenkins 环境变量，其次从 git 安全探测
@@ -168,32 +100,31 @@ else
   fi
 fi
 GIT_COMMIT_MSG=$(git -C "$REPO_ROOT" log -1 --pretty=%s 2>/dev/null | tr -d '\n' || echo "no-commit-msg")
-PGYER_DESC="${PGYER_DESC:-分支: $GIT_BRANCH, 提交: $GIT_COMMIT_MSG}"
+PGYER_DESC="${PGYER_DESC:-分支: $GIT_BRANCH, 提交: $GIT_COMMIT_MSG, 构建类型: Debug}"
 
 if [[ -z "$PGYER_API_KEY" ]]; then
   echo "[WARN] 未设置 PGYER_API_KEY，跳过上传蒲公英。"
   exit 0
 fi
 
-# 查找 IPA 文件
-echo "[INFO] 查找 IPA 文件..."
-find "$IPA_DIR" -name "*.ipa" -type f 2>/dev/null | head -n 5 || true
+# 查找 APK 文件
+echo "[INFO] 查找 APK 文件..."
+find "$APK_DIR" -name "*.apk" -type f 2>/dev/null | head -n 5 || true
 
-IPA_PATH=$(find "$IPA_DIR" -name "*.ipa" -type f 2>/dev/null | head -n 1 || true)
-if [[ -z "$IPA_PATH" ]]; then
-  echo "[ERROR] 未找到 IPA 文件，无法上传蒲公英。"
+APK_PATH=$(find "$APK_DIR" -name "*.apk" -type f 2>/dev/null | head -n 1 || true)
+if [[ -z "$APK_PATH" ]]; then
+  echo "[ERROR] 未找到 APK 文件，无法上传蒲公英。"
   echo "[DEBUG] 当前目录: $(pwd)"
-  echo "[DEBUG] IPA目录内容:"
-  ls -la "$IPA_DIR" || true
+  echo "[DEBUG] APK目录内容:"
+  ls -la "$APK_DIR" || true
   exit 1
 fi
 
-echo "[INFO] 找到 IPA 文件: $IPA_PATH"
-echo "[INFO] 文件大小: $(ls -lh "$IPA_PATH" | awk '{print $5}')"
+echo "[INFO] 找到 APK 文件: $APK_PATH"
+echo "[INFO] 文件大小: $(ls -lh "$APK_PATH" | awk '{print $5}')"
 
 # 调试信息
 echo "[DEBUG] API Key: ${PGYER_API_KEY:0:8}..."
-echo "[DEBUG] Install Type: $PGYER_INSTALL_TYPE"
 echo "[DEBUG] Description: $PGYER_DESC"
 
 # 根据蒲公英官方GitHub示例构建请求
@@ -205,16 +136,11 @@ echo "[DEBUG] 上传URL: $PGY_UPLOAD_URL"
 
 # 根据官方示例，构建正确的参数
 CURL_PARAMS=(
-  -F "file=@$IPA_PATH"
+  -F "file=@$APK_PATH"
   -F "_api_key=$PGYER_API_KEY"
-  -F "buildInstallType=$PGYER_INSTALL_TYPE"
+  -F "buildInstallType=1"
   -F "buildUpdateDescription=$PGYER_DESC"
 )
-
-# 只有当安装类型为密码安装时才添加密码参数
-if [[ "$PGYER_INSTALL_TYPE" == "2" && -n "$PGYER_PASSWORD" ]]; then
-  CURL_PARAMS+=( -F "buildPassword=$PGYER_PASSWORD" )
-fi
 
 # 使用 curl 上传，确保参数名称正确
 echo "[INFO] 执行上传命令..."
@@ -240,7 +166,7 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
   RESPONSE_BODY=$(echo "$CURL_RESPONSE" | sed 's/HTTP_STATUS:[0-9]*//')
   
   # 保存响应到文件
-  echo "$RESPONSE_BODY" > "$IPA_DIR/pgyer_upload_result.json"
+  echo "$RESPONSE_BODY" > "$APK_DIR/pgyer_upload_result.json"
   
   echo "[DEBUG] HTTP状态码: $HTTP_STATUS"
   echo "[DEBUG] 响应内容: $RESPONSE_BODY"
@@ -260,19 +186,19 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
       if [[ -n "$DOWNLOAD_URL" ]]; then
         echo "[INFO] 下载链接: $DOWNLOAD_URL"
       fi
-      echo "[SUCCESS] 蒲公英上传完成，结果已保存：$IPA_DIR/pgyer_upload_result.json"
+      echo "[SUCCESS] 蒲公英上传完成，结果已保存：$APK_DIR/pgyer_upload_result.json"
       # 仅在成功时发送飞书通知
-      SUCCESS_CONTENT="**🎉 构建成功！**\n\n"\
+      SUCCESS_CONTENT="**🎉 Android Debug 构建成功！**\n\n"\
 "**应用信息：**\n"\
-"• 应用名称：$APP_NAME（iOS）\n"\
-"• 版本号：$APP_VERSION ($BUILD_NUMBER)\n\n"\
+"• 应用名称：${APP_NAME}（Android Debug）\n"\
+"• 构建类型：Debug\n"\
 "**下载信息：**\n"\
 "• 下载链接：[点击下载]($DOWNLOAD_PAGE_URL)\n"\
 "• 描述：$PGYER_DESC\n\n"\
 "**构建时间：**\n"\
 "• 开始时间：$BUILD_START_TIME\n"\
 "• 完成时间：$(date '+%Y-%m-%d %H:%M:%S')"
-      send_feishu_notification "✅ 构建成功 - $APP_NAME" "$SUCCESS_CONTENT" "green"
+      send_feishu_notification "$SUCCESS_CONTENT"
       break
     else
       echo "[ERROR] 蒲公英上传失败"
@@ -313,7 +239,7 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
           ;;
         1097)
           echo "[SUGGESTION] 错误码 1097: 签名错误"
-          echo "[SUGGESTION] 请检查 IPA 文件签名是否正确"
+          echo "[SUGGESTION] 请检查 APK 文件签名是否正确"
           ;;
         *)
           echo "[SUGGESTION] 未知错误码，请查看蒲公英官方文档获取更多信息"
@@ -347,24 +273,20 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
   fi
 done
 
-echo "🎉 构建流程完成！"
-# echo "  - 构建时间: $BUILD_START_TIME -> $(date '+%Y-%m-%d %H:%M:%S')"
+echo "🎉 Android Debug 构建流程完成！"
 
 # ==================== 使用说明 ====================
 echo ""
 echo "📖 使用说明："
 echo "  1. 配置蒲公英参数："
 echo "     - PGYER_API_KEY: 在蒲公英开发者中心获取"
-echo "     - PGYER_BUILD_NAME: 自定义构建名称（可选）"
-echo "     - PGYER_BUILD_DESCRIPTION: 构建描述（可选）"
-echo "     - PGYER_CHANNEL_SHORTCUT: 渠道标识（可选）"
 echo "     - 注意：安装类型固定为公开安装，安装时间固定为永久"
 echo ""
 echo "  2. 配置飞书通知："
 echo "     - FEISHU_WEBHOOK_URL: 飞书群机器人 Webhook 地址"
 echo ""
 echo "  3. 运行脚本："
-echo "     ./build.sh"
+echo "     ./android_debug_build.sh"
 echo ""
 echo "🔗 相关链接："
 echo "  - 蒲公英 API 文档: https://www.pgyer.com/doc/view/api"

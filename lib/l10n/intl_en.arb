@@ -1,0 +1,15 @@
+{
+  "app_title": "Chat Demo",
+  "home_tab_chat": "WeChat",
+  "home_tab_contact": "Contacts",
+  "home_tab_find": "Discover",
+  "home_tab_mine": "Me",
+  "common_confirm": "Confirm",
+  "common_cancel": "Cancel",
+  "common_ok": "OK",
+  "login_title": "Login",
+  "login_username": "Username",
+  "login_password": "Password",
+  "login_submit": "Login",
+  "chat_input_hint": "Send message..."
+}

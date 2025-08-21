@@ -1,0 +1,15 @@
+{
+  "app_title": "聊天示例",
+  "home_tab_chat": "微信",
+  "home_tab_contact": "通讯录",
+  "home_tab_find": "发现",
+  "home_tab_mine": "我",
+  "common_confirm": "确定",
+  "common_cancel": "取消",
+  "common_ok": "好的",
+  "login_title": "登录",
+  "login_username": "账号",
+  "login_password": "密码",
+  "login_submit": "登录",
+  "chat_input_hint": "发消息…"
+}

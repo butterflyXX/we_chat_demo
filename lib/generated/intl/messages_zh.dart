@@ -22,19 +22,19 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-    "app_title": MessageLookupByLibrary.simpleMessage("聊天示例"),
-    "chat_input_hint": MessageLookupByLibrary.simpleMessage("发消息…"),
-    "common_cancel": MessageLookupByLibrary.simpleMessage("取消"),
-    "common_confirm": MessageLookupByLibrary.simpleMessage("确定"),
-    "common_ok": MessageLookupByLibrary.simpleMessage("好的"),
-    "home_tab_chat": MessageLookupByLibrary.simpleMessage("微信"),
-    "home_tab_contact": MessageLookupByLibrary.simpleMessage("通讯录"),
-    "home_tab_find": MessageLookupByLibrary.simpleMessage("发现"),
-    "home_tab_mine": MessageLookupByLibrary.simpleMessage("我"),
-    "language_settings": MessageLookupByLibrary.simpleMessage("语言设置"),
-    "login_password": MessageLookupByLibrary.simpleMessage("密码"),
-    "login_submit": MessageLookupByLibrary.simpleMessage("登录"),
-    "login_title": MessageLookupByLibrary.simpleMessage("登录"),
-    "login_username": MessageLookupByLibrary.simpleMessage("账号"),
-  };
+        "app_title": MessageLookupByLibrary.simpleMessage("聊天示例"),
+        "chat_input_hint": MessageLookupByLibrary.simpleMessage("发消息…"),
+        "common_cancel": MessageLookupByLibrary.simpleMessage("取消"),
+        "common_confirm": MessageLookupByLibrary.simpleMessage("确定"),
+        "common_ok": MessageLookupByLibrary.simpleMessage("好的"),
+        "home_tab_chat": MessageLookupByLibrary.simpleMessage("微信"),
+        "home_tab_contact": MessageLookupByLibrary.simpleMessage("通讯录"),
+        "home_tab_find": MessageLookupByLibrary.simpleMessage("发现"),
+        "home_tab_mine": MessageLookupByLibrary.simpleMessage("我"),
+        "language_settings": MessageLookupByLibrary.simpleMessage("语言设置"),
+        "login_password": MessageLookupByLibrary.simpleMessage("密码"),
+        "login_submit": MessageLookupByLibrary.simpleMessage("登录"),
+        "login_title": MessageLookupByLibrary.simpleMessage("登录"),
+        "login_username": MessageLookupByLibrary.simpleMessage("账号")
+      };
 }

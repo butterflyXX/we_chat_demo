@@ -7,7 +7,6 @@ import 'package:chat_demo/feature/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_demo/feature/chat_detail/view.dart';
 import 'package:chat_demo/feature/home_tab/view.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:go_router/go_router.dart';
 
 part 'route.g.dart';

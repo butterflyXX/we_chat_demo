@@ -22,21 +22,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-    "app_title": MessageLookupByLibrary.simpleMessage("Chat Demo"),
-    "chat_input_hint": MessageLookupByLibrary.simpleMessage("Send message..."),
-    "common_cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
-    "common_confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
-    "common_ok": MessageLookupByLibrary.simpleMessage("OK"),
-    "home_tab_chat": MessageLookupByLibrary.simpleMessage("WeChat"),
-    "home_tab_contact": MessageLookupByLibrary.simpleMessage("Contacts"),
-    "home_tab_find": MessageLookupByLibrary.simpleMessage("Discover"),
-    "home_tab_mine": MessageLookupByLibrary.simpleMessage("Me"),
-    "language_settings": MessageLookupByLibrary.simpleMessage(
-      "Language Settings",
-    ),
-    "login_password": MessageLookupByLibrary.simpleMessage("Password"),
-    "login_submit": MessageLookupByLibrary.simpleMessage("Login"),
-    "login_title": MessageLookupByLibrary.simpleMessage("Login"),
-    "login_username": MessageLookupByLibrary.simpleMessage("Username"),
-  };
+        "app_title": MessageLookupByLibrary.simpleMessage("Chat Demo"),
+        "chat_input_hint":
+            MessageLookupByLibrary.simpleMessage("Send message..."),
+        "common_cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "common_confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "common_ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "home_tab_chat": MessageLookupByLibrary.simpleMessage("WeChat"),
+        "home_tab_contact": MessageLookupByLibrary.simpleMessage("Contacts"),
+        "home_tab_find": MessageLookupByLibrary.simpleMessage("Discover"),
+        "home_tab_mine": MessageLookupByLibrary.simpleMessage("Me"),
+        "language_settings":
+            MessageLookupByLibrary.simpleMessage("Language Settings"),
+        "login_password": MessageLookupByLibrary.simpleMessage("Password"),
+        "login_submit": MessageLookupByLibrary.simpleMessage("Login"),
+        "login_title": MessageLookupByLibrary.simpleMessage("Login"),
+        "login_username": MessageLookupByLibrary.simpleMessage("Username")
+      };
 }

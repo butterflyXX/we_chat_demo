@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/services/app_lifecycle_service.dart';
+import 'package:chat_demo/common/services/blue_service/blue_service.dart';
 import 'package:chat_demo/common/services/locale_service.dart';
 import 'package:chat_demo/service_manager.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +29,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    // 在下一帧初始化生命周期服务
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      serviceLocator.get<BlueService>().init();
       _lifecycleService = ref.read(appLifecycleServiceProvider);
       _lifecycleService?.initialize();
     });

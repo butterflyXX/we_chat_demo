@@ -13,7 +13,6 @@ import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/item_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ChatBottomBar extends ConsumerStatefulWidget {
   final String chatId;

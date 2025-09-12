@@ -17,8 +17,7 @@ part 'mqtt_service.g.dart';
 class MqttServiceNotifier extends _$MqttServiceNotifier {
   //======================== 基础字段 ========================
   late MqttServerClient _client;
-  final StreamController<MqttMessageData> _messageStreamController =
-      StreamController<MqttMessageData>.broadcast();
+  final StreamController<MqttMessageData> _messageStreamController = StreamController<MqttMessageData>.broadcast();
 
   // 配置参数
   String _broker = 'broker.emqx.io';
@@ -39,8 +38,7 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
   }
 
   //======================== 对外暴露 ========================
-  Stream<MqttMessageData> get messageStream =>
-      _messageStreamController.stream;
+  Stream<MqttMessageData> get messageStream => _messageStreamController.stream;
 
   // 初始化客户端（不自动连接）
   Future<void> initialize({
@@ -115,11 +113,7 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
   }
 
   // 发送消息
-  Future<void> sendMessage({
-    required String receiverId,
-    required String content,
-    required String messageType,
-  }) async {
+  Future<void> sendMessage({required String receiverId, required String content, required String messageType}) async {
     if (_client.connectionStatus?.state != MqttConnectionState.connected) {
       throw Exception('MQTT 未连接');
     }
@@ -133,8 +127,6 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
       try {
         final file = File(localPath);
         if (await file.exists()) {
-          final fileSize = await file.length();
-          
           // 1. 先发送快速通知（包含元数据，不含音频数据）
           final quickMessage = {
             'messageId': messageId,
@@ -174,10 +166,10 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
                 'timestamp': timestamp,
                 'messageType': 'voice_data',
               };
-              
+
               final audioBuilder = MqttClientPayloadBuilder()..addUTF8String(jsonEncode(audioMessage));
               _client.publishMessage(topic, MqttQos.atLeastOnce, audioBuilder.payload!);
-              
+
               debugPrint('语音数据发送完成: $messageId');
             } catch (e) {
               debugPrint('语音数据发送失败: $e');
@@ -215,12 +207,11 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
   void _onMessage(List<MqttReceivedMessage<MqttMessage>> messages) {
     for (final msg in messages) {
       final publish = msg.payload as MqttPublishMessage;
-      final payloadStr =
-          MqttPublishPayload.bytesToStringAsString(publish.payload.message);
+      final payloadStr = MqttPublishPayload.bytesToStringAsString(publish.payload.message);
       try {
         final map = jsonDecode(payloadStr) as Map<String, dynamic>;
         final messageType = (map['messageType'] as String?) ?? 'text';
-        
+
         if (messageType == 'voice_notify') {
           // 语音通知：立即显示，等待音频数据
           final info = MessageInfo(
@@ -232,7 +223,6 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
             messageType: 'voice_notify',
           );
           _cacheMessage(info.senderId, info);
-          
         } else if (messageType == 'voice_data') {
           // 语音数据：解码并保存到本地文件，然后更新现有消息
           final contentStr = map['content'] as String;
@@ -258,19 +248,15 @@ class MqttServiceNotifier extends _$MqttServiceNotifier {
                 timestamp: timestamp,
                 messageType: 'voice', // 最终类型
               );
-              
+
               // 直接发送更新事件，让接收方知道这是更新操作
-              _messageStreamController.add(MqttMessageData(
-                chatId: senderId, 
-                messageInfo: updatedInfo,
-              ));
-              
+              _messageStreamController.add(MqttMessageData(chatId: senderId, messageInfo: updatedInfo));
+
               debugPrint('语音数据接收完成: $messageId -> $filePath');
             } catch (e) {
               debugPrint('语音数据保存失败: $e');
             }
           });
-          
         } else {
           // 文本等其他类型：直接转 Domain
           final info = MessageInfo.fromJson(map);

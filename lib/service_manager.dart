@@ -1,4 +1,5 @@
 import 'package:chat_demo/common/kv_manager/kv_manager.dart';
+import 'package:chat_demo/common/services/blue_service/blue_service.dart';
 import 'package:chat_demo/common/services/record_service.dart';
 import 'package:chat_demo/common/services/tts_service.dart';
 import 'package:get_it/get_it.dart';
@@ -22,4 +23,5 @@ Future<void> registerServers() async {
     ),
   );
   serviceLocator.registerSingleton<RecordService>(RecordService());
+  serviceLocator.registerSingleton<BlueService>(BlueService());
 }

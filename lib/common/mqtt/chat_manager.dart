@@ -39,50 +39,28 @@ class ChatManager extends _$ChatManager {
     String? password,
   }) async {
     initCacheFromDb();
-    await _mqttService.initialize(
-      userId: userId,
-      broker: broker,
-      port: port,
-      username: username,
-      password: password,
-    );
+    await _mqttService.initialize(userId: userId, broker: broker, port: port, username: username, password: password);
   }
 
   // 连接到 MQTT 服务器
   Future<bool> connect() async {
     return await _mqttService.connect();
-    
   }
 
   // 发送消息
-  Future<void> sendMessage({
-    required String receiverId,
-    required String content,
-  }) async {
-    await _mqttService.sendMessage(
-      receiverId: receiverId,
-      content: content,
-      messageType: 'text',
-    );
+  Future<void> sendMessage({required String receiverId, required String content}) async {
+    await _mqttService.sendMessage(receiverId: receiverId, content: content, messageType: 'text');
   }
 
   // 发送语音（DTO传输，端上保路径）
-  Future<void> sendVoiceMessage({
-    required String receiverId,
-    required String audioFilePath,
-    String ext = 'm4a',
-  }) async {
-    await _mqttService.sendMessage(
-      receiverId: receiverId,
-      content: audioFilePath,
-      messageType: 'voice',
-    );
+  Future<void> sendVoiceMessage({required String receiverId, required String audioFilePath, String ext = 'm4a'}) async {
+    await _mqttService.sendMessage(receiverId: receiverId, content: audioFilePath, messageType: 'voice');
   }
 
   // 从数据库初始化消息缓存
   Future<void> initCacheFromDb() async {
     final dbMessages = await _dbService.getMessages();
-    final Map<String, List<MessageInfo>> _messageCache = {};
+    final Map<String, List<MessageInfo>> messageCache = {};
     for (final msg in dbMessages) {
       // 组装 MessageInfo
       final messageInfo = MessageInfo(
@@ -95,14 +73,14 @@ class ChatManager extends _$ChatManager {
       );
       // 确定聊天ID
       String chatId = _chatId(messageInfo);
-      _messageCache.putIfAbsent(chatId, () => []);
-      _messageCache[chatId]!.add(messageInfo);
+      messageCache.putIfAbsent(chatId, () => []);
+      messageCache[chatId]!.add(messageInfo);
     }
     // 按时间排序
-    for (final list in _messageCache.values) {
+    for (final list in messageCache.values) {
       list.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     }
-    state = _messageCache;
+    state = messageCache;
   }
 
   // 处理 MQTT 消息
@@ -116,7 +94,6 @@ class ChatManager extends _$ChatManager {
 
   // 处理聊天消息
   void _handleChatMessage(MessageInfo message) {
-
     // 确定聊天 ID
     String chatId = _chatId(message);
     List<MessageInfo> list = [...(state[chatId] ?? [])];
@@ -132,12 +109,11 @@ class ChatManager extends _$ChatManager {
     _insertMessage(message);
 
     _updateUserInfo(message);
-    
   }
 
   void _insertMessage(MessageInfo message) {
     llPrint("message: $message");
-    
+
     _dbService.insertOrUpdateMessage(
       MessageTableCompanion.insert(
         loginUserId: ref.read(userInfoNotifierProvider)!.id,
@@ -155,7 +131,7 @@ class ChatManager extends _$ChatManager {
   void _updateUserInfo(MessageInfo message) async {
     // 解析消息内容，确定显示文本
     String displayText = message.content;
-    
+
     try {
       final jsonData = jsonDecode(message.content);
       if (jsonData is Map<String, dynamic> && jsonData['type'] == 'voice') {
@@ -165,13 +141,13 @@ class ChatManager extends _$ChatManager {
       // 普通文本消息，直接使用原内容
       displayText = message.content;
     }
-    
-    await _dbService.updateUser(_chatId(message), onGetChangeValue: () {
-      return UserTableInfoCompanion(
-        createdAt: Value(message.timestamp),
-        lastMessage: Value(displayText),
-      );
-    });
+
+    await _dbService.updateUser(
+      _chatId(message),
+      onGetChangeValue: () {
+        return UserTableInfoCompanion(createdAt: Value(message.timestamp), lastMessage: Value(displayText));
+      },
+    );
 
     ref.read(userListProvider.notifier).reloadData();
   }

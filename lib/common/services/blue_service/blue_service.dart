@@ -128,8 +128,7 @@ class BlueService {
     try {
       await readCharacteristic.read();
     } catch (e) {
-      final errorString = e.toString();
-      if (errorString.contains('Code=15')) {
+      if (_isPairingOrEncryptionRequired(e)) {
         onFail();
         return;
       }
@@ -161,6 +160,33 @@ class BlueService {
     sendOrder(map);
     // 订阅通知
     // await notifyCharacteristic.setNotifyValue(true);
+  }
+
+  bool _isPairingOrEncryptionRequired(Object error) {
+    final s = error.toString();
+    // 常见域名
+    final isCbatt = s.contains('CBATTErrorDomain');
+
+    // 常见错误码
+    final hasCode =
+        s.contains('Code=5') // Insufficient Authentication
+        ||
+        s.contains('Code=8') // Insufficient Authorization
+        ||
+        s.contains('Code=12') // Insufficient Encryption Key Size
+        ||
+        s.contains('Code=15'); // Insufficient Encryption
+
+    // 关键文案兜底
+    final hasKeyword =
+        s.contains('Authentication is insufficient') ||
+        s.contains('Insufficient Authentication') ||
+        s.contains('Insufficient Authorization') ||
+        s.contains('Encryption is insufficient') ||
+        s.contains('Insufficient Encryption') ||
+        s.contains('Insufficient Encryption Key Size');
+
+    return isCbatt && (hasCode || hasKeyword);
   }
 
   Future sendOrder(Map data) async {

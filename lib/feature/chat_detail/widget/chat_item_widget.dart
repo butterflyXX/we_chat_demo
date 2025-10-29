@@ -18,10 +18,7 @@ class ChatItemWidget extends StatelessWidget {
       builder: (context, constraints) {
         final textWidth = constraints.maxWidth - 36.w - 20.w;
 
-        final icon = Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: iconWidget(),
-        );
+        final icon = Padding(padding: const EdgeInsets.only(top: 2), child: iconWidget());
 
         Widget contentWidget;
 
@@ -45,10 +42,7 @@ class ChatItemWidget extends StatelessWidget {
         if (!isUser()) {
           children = [Expanded(child: contentWidget), padding, icon];
         }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
-        );
+        return Row(crossAxisAlignment: CrossAxisAlignment.start, children: children);
       },
     );
   }
@@ -66,9 +60,7 @@ class ChatItemWidget extends StatelessWidget {
 
   Widget textWidget(double maxWidth) {
     return Row(
-      mainAxisAlignment: !isUser()
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+      mainAxisAlignment: !isUser() ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -84,9 +76,7 @@ class ChatItemWidget extends StatelessWidget {
 
   Widget voiceWidget(double maxWidth) {
     return Row(
-      mainAxisAlignment: !isUser()
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+      mainAxisAlignment: !isUser() ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         GestureDetector(
           onTap: () async {

@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.9.2
 
 dependencies:
   flutter_localizations:
@@ -22,7 +22,6 @@ dependencies:
   intl: ^0.20.2
   path_provider: ^2.1.5
   collection: ^1.19.1
-  git_hooks: ^1.0.2
   path: ^1.9.1
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -55,7 +54,7 @@ dev_dependencies:
   json_serializable: ^6.9.5
   riverpod_generator: ^2.6.5
   go_router_builder: ^3.0.1
-  dart_pre_commit: ^5.4.7
+  dart_pre_commit: ^6.0.0
 
 dart_pre_commit:
   # exclude:

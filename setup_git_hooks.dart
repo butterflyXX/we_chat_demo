@@ -1,9 +1,12 @@
 import 'dart:io';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   // Add this part
 
-  final command = 'fvm dart run dart_pre_commit'; // or "flutter pub run dart_pre_commit" for flutter projects
+  final useFvm = !args.contains('--no-fvm');
+  final command = useFvm
+      ? 'fvm dart run dart_pre_commit' // or "fmv flutter pub run dart_pre_commit" for flutter projects
+      : 'dart run dart_pre_commit'; // or "flutter pub run dart_pre_commit" for flutter projects
 
   final preCommitHook = File('.git/hooks/pre-commit');
   await preCommitHook.parent.create();

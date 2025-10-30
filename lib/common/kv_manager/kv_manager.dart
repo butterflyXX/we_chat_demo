@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum KvKey<T> {
+  userChatAi<bool>(true),
   connectedDevice<String>(false),
   userInfo<String>(false),
   locale<String>(false);

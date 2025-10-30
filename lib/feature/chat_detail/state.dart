@@ -1,6 +1,9 @@
+import 'package:chat_demo/common/chat_ai/chat_ai_service.dart';
 import 'package:chat_demo/common/common.dart';
 import 'package:chat_demo/common/mqtt/chat_manager.dart';
 import 'package:chat_demo/common/mqtt/mqtt_service.dart';
+import 'package:chat_demo/common/services/setting_service.dart';
+import 'package:chat_demo/common/user_info/user_info.dart';
 import 'package:chat_demo/feature/chat_detail/widget/chat_bottom_bar/chat_bottom_bar_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -88,10 +91,10 @@ class ChatDetailVM extends _$ChatDetailVM {
     final isConnected = ref.read(mqttConnectionNotifierProvider) == MqttConnectionState.connected;
     if (content.trim().isEmpty || !isConnected) return;
     try {
-      await _chatManager.sendMessage(
-        receiverId: chatId,
-        content: content.trim(),
-      );
+      await _chatManager.sendMessage(receiverId: chatId, content: content.trim());
+      if (ref.read(settingServiceProvider).userChatAi) {
+        await sendChatAiMessage(content);
+      }
     } catch (e) {
       // 显示错误
       debugPrint('发送消息失败: $e');
@@ -109,21 +112,20 @@ class ChatDetailVM extends _$ChatDetailVM {
 
     try {
       // 使用 ChatManager 的 sendVoiceMessage 方法
-      await _chatManager.sendVoiceMessage(
-        receiverId: chatId,
-        audioFilePath: audioFilePath,
-      );
+      await _chatManager.sendVoiceMessage(receiverId: chatId, audioFilePath: audioFilePath);
 
       llPrint('语音消息发送成功，文件保留: $audioFilePath');
-      
+
       // 滚动到底部
       scrollToBottom(true, true);
-      
     } catch (e) {
       debugPrint('发送语音消息失败: $e');
     }
   }
-  
+
+  Future<void> sendChatAiMessage(String content) async {
+    await ref.read(chatAiServiceProvider.notifier).sendMessage(content, ref.read(userInfoNotifierProvider)!.id, chatId);
+  }
 
   void unfocus() {
     ref.read(chatBottomBarControllerProvider(chatId).notifier).setType(ChatBottomBarInputType.normal);
@@ -137,8 +139,5 @@ class ChatDetailVM extends _$ChatDetailVM {
 
 @freezed
 abstract class ChatDetailState with _$ChatDetailState {
-  const factory ChatDetailState({
-    @Default(true) bool canScroll,
-    @Default(false) bool isRecord,
-  }) = _ChatDetailState;
+  const factory ChatDetailState({@Default(true) bool canScroll, @Default(false) bool isRecord}) = _ChatDetailState;
 }

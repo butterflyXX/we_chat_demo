@@ -6,7 +6,7 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatDetailVMHash() => r'd5a457f95e798402a6a8a0c6771a720417076a89';
+String _$chatDetailVMHash() => r'3a3f621bece421e7b4808f3ef61fd95f1589b69a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,8 +29,7 @@ class _SystemHash {
   }
 }
 
-abstract class _$ChatDetailVM
-    extends BuildlessAutoDisposeNotifier<ChatDetailState> {
+abstract class _$ChatDetailVM extends BuildlessAutoDisposeNotifier<ChatDetailState> {
   late final String chatId;
 
   ChatDetailState build(String chatId);
@@ -51,9 +50,7 @@ class ChatDetailVMFamily extends Family<ChatDetailState> {
   }
 
   @override
-  ChatDetailVMProvider getProviderOverride(
-    covariant ChatDetailVMProvider provider,
-  ) {
+  ChatDetailVMProvider getProviderOverride(covariant ChatDetailVMProvider provider) {
     return call(provider.chatId);
   }
 
@@ -65,28 +62,23 @@ class ChatDetailVMFamily extends Family<ChatDetailState> {
   static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies => _allTransitiveDependencies;
 
   @override
   String? get name => r'chatDetailVMProvider';
 }
 
 /// See also [ChatDetailVM].
-class ChatDetailVMProvider
-    extends AutoDisposeNotifierProviderImpl<ChatDetailVM, ChatDetailState> {
+class ChatDetailVMProvider extends AutoDisposeNotifierProviderImpl<ChatDetailVM, ChatDetailState> {
   /// See also [ChatDetailVM].
   ChatDetailVMProvider(String chatId)
     : this._internal(
         () => ChatDetailVM()..chatId = chatId,
         from: chatDetailVMProvider,
         name: r'chatDetailVMProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$chatDetailVMHash,
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$chatDetailVMHash,
         dependencies: ChatDetailVMFamily._dependencies,
-        allTransitiveDependencies:
-            ChatDetailVMFamily._allTransitiveDependencies,
+        allTransitiveDependencies: ChatDetailVMFamily._allTransitiveDependencies,
         chatId: chatId,
       );
 
@@ -124,8 +116,7 @@ class ChatDetailVMProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<ChatDetailVM, ChatDetailState>
-  createElement() {
+  AutoDisposeNotifierProviderElement<ChatDetailVM, ChatDetailState> createElement() {
     return _ChatDetailVMProviderElement(this);
   }
 
@@ -150,8 +141,7 @@ mixin ChatDetailVMRef on AutoDisposeNotifierProviderRef<ChatDetailState> {
   String get chatId;
 }
 
-class _ChatDetailVMProviderElement
-    extends AutoDisposeNotifierProviderElement<ChatDetailVM, ChatDetailState>
+class _ChatDetailVMProviderElement extends AutoDisposeNotifierProviderElement<ChatDetailVM, ChatDetailState>
     with ChatDetailVMRef {
   _ChatDetailVMProviderElement(super.provider);
 

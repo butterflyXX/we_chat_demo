@@ -1,5 +1,6 @@
 import 'package:chat_demo/common/navigator/navigator_manager.dart';
 import 'package:chat_demo/common/services/locale_service.dart';
+import 'package:chat_demo/common/services/setting_service.dart';
 import 'package:chat_demo/common/services/tts_service.dart';
 import 'package:chat_demo/common/widget/button/icon_button.dart';
 import 'package:chat_demo/common/services/logout_service.dart';
@@ -77,6 +78,15 @@ class _MineState extends ConsumerState<Mine> {
                 },
               );
             },
+          ),
+          ListTile(
+            title: Text('聊天机器人'),
+            trailing: Switch(
+              value: ref.watch(settingServiceProvider).userChatAi,
+              onChanged: (value) {
+                ref.read(settingServiceProvider.notifier).setUserChatAi(value);
+              },
+            ),
           ),
         ],
       ),

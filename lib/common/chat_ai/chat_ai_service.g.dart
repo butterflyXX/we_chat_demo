@@ -1,23 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'locale_service.dart';
+part of 'chat_ai_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$localeServiceHash() => r'df39b74dbfafff47816a08417a52a3cf66b8cdae';
+String _$chatAiServiceHash() => r'd409449e06ba2099af0c1c174bd5d5d82d75e0c5';
 
-/// See also [LocaleService].
-@ProviderFor(LocaleService)
-final localeServiceProvider = NotifierProvider<LocaleService, Locale>.internal(
-  LocaleService.new,
-  name: r'localeServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$localeServiceHash,
+/// See also [ChatAiService].
+@ProviderFor(ChatAiService)
+final chatAiServiceProvider = NotifierProvider<ChatAiService, SparkWsParam>.internal(
+  ChatAiService.new,
+  name: r'chatAiServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$chatAiServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$LocaleService = Notifier<Locale>;
+typedef _$ChatAiService = Notifier<SparkWsParam>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

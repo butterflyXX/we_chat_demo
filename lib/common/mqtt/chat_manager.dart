@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chat_demo/common/chat_ai/chat_ai_service.dart';
 import 'package:chat_demo/common/common.dart';
+import 'package:chat_demo/common/extension/util_extension.dart';
 import 'package:chat_demo/common/mqtt/message_info.dart';
 import 'package:chat_demo/common/providers/user_list.dart';
 import 'package:chat_demo/common/user_info/user_info.dart';
@@ -18,13 +20,18 @@ part 'chat_manager.g.dart';
 @Riverpod(keepAlive: true)
 class ChatManager extends _$ChatManager {
   late final _mqttService = ref.read(mqttServiceNotifierProvider);
+  late final _chatAiService = ref.read(chatAiServiceProvider.notifier);
 
   late final _dbService = ref.read(dataBaseServiceProvider.notifier);
 
   @override
   Map<String, List<MessageInfo>> build() {
     final subscription = _mqttService.messageStream.listen(_handleMqttMessage);
-    ref.onDispose(subscription.cancel);
+    final chatSubscription = _chatAiService.stream.listen(_handleChatAiMessage);
+    ref.onDispose(() {
+      subscription.cancel();
+      chatSubscription.cancel();
+    });
     return {};
   }
 
@@ -92,12 +99,25 @@ class ChatManager extends _$ChatManager {
     }
   }
 
+  // 处理 AI 聊天消息
+  void _handleChatAiMessage(MqttMessageData messageData) {
+    try {
+      final targetMessage = getMessage(messageData.messageInfo);
+      final messageInfo =
+          targetMessage?.let((it) => it.copyWith(content: it.content + messageData.messageInfo.content)) ??
+          messageData.messageInfo;
+      _handleChatMessage(messageInfo);
+    } catch (e) {
+      debugPrint('处理 chat ai 消息失败: $e');
+    }
+  }
+
   // 处理聊天消息
   void _handleChatMessage(MessageInfo message) {
     // 确定聊天 ID
-    String chatId = _chatId(message);
-    List<MessageInfo> list = [...(state[chatId] ?? [])];
-    final targetMessage = list.firstWhereOrNull((element) => element.messageId == message.messageId);
+    final chatId = _chatId(message);
+    final targetMessage = getMessage(message);
+    final list = getMessageList(message);
     if (targetMessage != null) {
       final index = list.indexOf(targetMessage);
       list[index] = message;
@@ -160,6 +180,18 @@ class ChatManager extends _$ChatManager {
   String _chatId(MessageInfo message) {
     final currentUserId = ref.read(userInfoNotifierProvider)!.id;
     return message.getChatId(currentUserId);
+  }
+
+  MessageInfo? getMessage(MessageInfo message) {
+    String chatId = _chatId(message);
+    final list = state[chatId];
+    if (list == null) return null;
+    return list.firstWhereOrNull((element) => element.messageId == message.messageId);
+  }
+
+  List<MessageInfo> getMessageList(MessageInfo message) {
+    String chatId = _chatId(message);
+    return [...(state[chatId] ?? [])];
   }
 
   // 清理资源
